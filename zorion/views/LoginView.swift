@@ -7,18 +7,20 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct LoginView: View {
     var body: some View {
+        Color(.white)
+        
         VStack {
             Image(systemName: "globe")
                 .imageScale(.large)
                 .foregroundStyle(.tint)
-            Text("Hello, world!")
+            Text("LOGIN VIEW")
         }
         .padding()
     }
 }
 
 #Preview {
-    ContentView()
+    LoginView()
 }
