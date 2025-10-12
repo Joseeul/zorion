@@ -9,7 +9,6 @@ import SwiftUI
 
 struct SplashView: View {
     @Binding var showingSplash: Bool
-    @State var isHomeRootView = false
     @State var scaleAmount: CGFloat = 1
     
     var body: some View {

@@ -18,7 +18,7 @@ struct zorionApp: App {
             if showingSplash {
                 SplashView(showingSplash: $showingSplash)
             } else {
-                LoginView()
+                AuthView()
             }
         }
     }

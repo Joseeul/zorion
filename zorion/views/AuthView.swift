@@ -8,7 +8,7 @@
 import SwiftUI
 import UIKit
 
-struct LoginView: View {
+struct AuthView: View {
     @State var email: String = ""
     @State var password: String = ""
     @State var isSignIn: Bool = true //buat nandain sekarang lagi signin/signup (untuk conditional rendering)
@@ -56,7 +56,7 @@ struct LoginView: View {
             .disableAutocorrection(true)
             
             Button(action: {}, label: {
-                Text("Sign In")
+                Text(isSignIn ? "Sign In" : "Sign Up")
                     .frame(maxWidth: .infinity)
             })
             .frame(maxWidth: .infinity)
@@ -68,19 +68,20 @@ struct LoginView: View {
             .cornerRadius(8)
             .padding(.top, 16)
             
-            (Text("By signing in you agree to our")
-                .font(.caption)
-            + Text(" Terms ")
-                .font(.caption)
-                .foregroundColor(Color.zorionPrimary)
-                .fontWeight(.semibold)
-            + Text("and")
-                .font(.caption)
-            + Text(" Privacy Policy")
-                .font(.caption)
-                .foregroundColor(Color.zorionPrimary)
-                .fontWeight(.semibold)
-             )
+            HStack(spacing: 4) {
+                Text("By signing \(isSignIn ? "in" : "up") you agree to our")
+                
+                Text("Terms")
+                    .foregroundColor(.zorionPrimary)
+                    .fontWeight(.semibold)
+                
+                Text("and")
+                
+                Text("Privacy Policy")
+                    .foregroundColor(.zorionPrimary)
+                    .fontWeight(.semibold)
+            }
+            .font(.caption)
             .padding(.top, 8)
             .frame(maxWidth: .infinity, alignment: .leading)
             
@@ -97,7 +98,7 @@ struct LoginView: View {
                     .frame(height: 1)
                     .foregroundColor(Color.zorionGray)
             }
-            .padding([.top, .bottom], 24)
+            .padding([.top, .bottom], 16)
             
             Group {
                 Button(action: {}, label: {
@@ -167,11 +168,13 @@ struct LoginView: View {
             Spacer()
             
             HStack {
-                Text("Never use Zorion before?")
+                Text(isSignIn ? "Never use Zorion before?" : "Already use Zorion before?")
                     .font(.subheadline)
                 
-                Button(action: {}, label: {
-                    Text("Sign Up")
+                Button(action: {
+                    isSignIn = !isSignIn
+                }, label: {
+                    Text(isSignIn ? "Sign Up" : "Sign In")
                         .font(.subheadline)
                         .foregroundColor(.zorionPrimary)
                         .fontWeight(.semibold)
@@ -183,5 +186,5 @@ struct LoginView: View {
 }
 
 #Preview {
-    LoginView()
+    AuthView()
 }
