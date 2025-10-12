@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct SplashView: View {
+    @Binding var showingSplash: Bool
     @State var isHomeRootView = false
     @State var scaleAmount: CGFloat = 1
     
@@ -15,15 +16,11 @@ struct SplashView: View {
         ZStack {
             LinearGradient(colors: [Color.zorionPrimary, Color.zorionSecondary], startPoint: .top, endPoint: .bottom)
             
-            if isHomeRootView {
-                LoginView()
-            } else {
-                Image("zorion_logo")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .scaleEffect(scaleAmount)
-                    .frame(width: 80)
-            }
+            Image("zorion_logo")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .scaleEffect(scaleAmount)
+                .frame(width: 80)
         }
         .ignoresSafeArea()
         .onAppear {
@@ -36,12 +33,12 @@ struct SplashView: View {
             }
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                isHomeRootView = true
+                self.showingSplash = false
             }
         }
     }
 }
 
 #Preview {
-    SplashView()
+    SplashView(showingSplash: .constant(true))
 }
