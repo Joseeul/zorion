@@ -60,6 +60,9 @@ struct CreateUsernameView: View {
             
             Spacer()
         }
+        .onTapGesture {
+            hideKeyboard()
+        }
         .padding()
     }
 }

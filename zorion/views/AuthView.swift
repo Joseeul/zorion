@@ -190,6 +190,9 @@ struct AuthView: View {
                 }
             }
             .padding()
+            .onTapGesture {
+                hideKeyboard()
+            }
             .navigationDestination(for: authRoute.self) {
                 destination in switch destination {
                 case .ChooseValidationView: ChooseValidationView(path: $path)

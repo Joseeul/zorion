@@ -62,6 +62,9 @@ struct AccountValidationView: View {
             
             Spacer()
         }
+        .onTapGesture {
+            hideKeyboard()
+        }
         .padding()
     }
 }

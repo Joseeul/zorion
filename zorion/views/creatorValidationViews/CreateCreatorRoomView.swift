@@ -71,60 +71,118 @@ struct CreateCreatorRoomView: View {
                 .font(.subheadline)
                 .padding(.top, 8)
             
-            HStack(spacing: 24) {
-                Button(action: {}, label: {
-                    Image(systemName: "plus")
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 32, height: 32)
-                        .clipShape(.circle)
-                        .foregroundColor(.zorionGray)
-                })
-                .padding(14)
-                .overlay(
-                    Circle()
-                        .stroke(.zorionGray, lineWidth: 0.5)
-                )
+            VStack {
+                HStack(spacing: 24) {
+                    Button(action: {}, label: {
+                        Image(systemName: "plus")
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 32, height: 32)
+                            .clipShape(.circle)
+                            .foregroundColor(.zorionGray)
+                    })
+                    .padding(14)
+                    .overlay(
+                        Circle()
+                            .stroke(.zorionGray, lineWidth: 0.5)
+                    )
+                    
+                    Button(action: {}, label: {
+                        Image("chat_orange")
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 70, height: 70)
+                            .clipShape(.circle)
+                    })
+                    .padding(2)
+                    .overlay(
+                        Circle()
+                            .stroke(.zorionGray, lineWidth: 1)
+                    )
+                    
+                    Button(action: {}, label: {
+                        Image("chat_black")
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 70, height: 70)
+                            .clipShape(.circle)
+                    })
+                    .padding(2)
+                    .overlay(
+                        Circle()
+                            .stroke(.zorionGray, lineWidth: 1)
+                    )
+                    
+                    
+                    Button(action: {}, label: {
+                        Image("chat_red")
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 70, height: 70)
+                            .clipShape(.circle)
+                    })
+                    .padding(2)
+                    .overlay(
+                        Circle()
+                            .stroke(.zorionGray, lineWidth: 1)
+                    )
+                }
                 
-                Button(action: {}, label: {
-                    Image("profile_orange")
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 70, height: 70)
-                        .clipShape(.circle)
-                })
-                .padding(2)
-                .overlay(
-                    Circle()
-                        .stroke(.zorionGray, lineWidth: 1)
-                )
-                
-                Button(action: {}, label: {
-                    Image("profile_black")
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 70, height: 70)
-                        .clipShape(.circle)
-                })
-                .padding(2)
-                .overlay(
-                    Circle()
-                        .stroke(.zorionGray, lineWidth: 1)
-                )
-                
-                
-                Button(action: {}, label: {
-                    Image("profile_red")
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 70, height: 70)
-                        .clipShape(.circle)
-                })
-                .padding(2)
-                .overlay(
-                    Circle()
-                        .stroke(.zorionGray, lineWidth: 1)
-                )
+                HStack(spacing: 24) {
+                    Button(action: {}, label: {
+                        Image("chat_green")
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 70, height: 70)
+                            .clipShape(.circle)
+                    })
+                    .padding(2)
+                    .overlay(
+                        Circle()
+                            .stroke(.zorionGray, lineWidth: 1)
+                    )
+                    
+                    Button(action: {}, label: {
+                        Image("chat_blue")
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 70, height: 70)
+                            .clipShape(.circle)
+                    })
+                    .padding(2)
+                    .overlay(
+                        Circle()
+                            .stroke(.zorionGray, lineWidth: 1)
+                    )
+                    
+                    Button(action: {}, label: {
+                        Image("chat_pink")
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 70, height: 70)
+                            .clipShape(.circle)
+                    })
+                    .padding(2)
+                    .overlay(
+                        Circle()
+                            .stroke(.zorionGray, lineWidth: 1)
+                    )
+                    
+                    
+                    Button(action: {}, label: {
+                        Image("chat_dark_blue")
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 70, height: 70)
+                            .clipShape(.circle)
+                    })
+                    .padding(2)
+                    .overlay(
+                        Circle()
+                            .stroke(.zorionGray, lineWidth: 1)
+                    )
+                }
+                .padding(.top, 8)
             }
             
             Button(action: {
@@ -144,6 +202,9 @@ struct CreateCreatorRoomView: View {
             .padding(.top, 16)
             
             Spacer()
+        }
+        .onTapGesture {
+            hideKeyboard()
         }
         .padding()
     }
