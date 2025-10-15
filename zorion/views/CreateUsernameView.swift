@@ -7,13 +7,9 @@
 
 import SwiftUI
 
-enum CreateUsernameDestination: Hashable {
-    case CreateProfilePictureView
-}
-
 struct CreateUsernameView: View {
     @Binding var path: NavigationPath
-    @State var username: String = ""
+    @State private var username: String = ""
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -47,7 +43,7 @@ struct CreateUsernameView: View {
             .disableAutocorrection(true)
             
             Button(action: {
-                path.append(CreateUsernameDestination.CreateProfilePictureView)
+                path.append(authRoute.CreateProfilePictureView)
             }, label: {
                 Text("Submit")
                     .frame(maxWidth: .infinity)

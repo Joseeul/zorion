@@ -6,20 +6,15 @@
 //
 
 import SwiftUI
-import UIKit
-
-enum AuthViewDestination: Hashable {
-    case ChooseValidationView
-}
 
 // TODO: button oauthnya blum full jadi harus diklik lewat textnya
 // TODO: keyboard kalau klik di area luar belom bisa nutup
 
 struct AuthView: View {
     @State var path = NavigationPath()
-    @State var email: String = ""
-    @State var password: String = ""
-    @State var isSignIn: Bool = true //buat nandain sekarang lagi signin/signup (untuk conditional rendering)
+    @State private var email: String = ""
+    @State private var password: String = ""
+    @State private var isSignIn: Bool = true //buat nandain sekarang lagi signin/signup (untuk conditional rendering)
     
     var body: some View {
         NavigationStack(path: $path) {
@@ -66,7 +61,7 @@ struct AuthView: View {
                 
                 Button(action: {
                     if !isSignIn {
-                        path.append(AuthViewDestination.ChooseValidationView)
+                        path.append(authRoute.ChooseValidationView)
                     }
                 }, label: {
                     Text(isSignIn ? "Sign In" : "Sign Up")
@@ -195,29 +190,12 @@ struct AuthView: View {
                 }
             }
             .padding()
-            .navigationDestination(for: AuthViewDestination.self) {
+            .navigationDestination(for: authRoute.self) {
                 destination in switch destination {
                 case .ChooseValidationView: ChooseValidationView(path: $path)
-                }
-            }
-            .navigationDestination(for: ChooseValidationDestination.self) {
-                destination in switch destination {
                 case .AccountValidationView(let platform): AccountValidationView(platform: platform, path: $path)
                 case .CreateUsernameView: CreateUsernameView(path: $path)
-                }
-            }
-            .navigationDestination(for: CreateCreatorRoomDestination.self) {
-                destination in switch destination {
-                case .CreateUsernameView: CreateUsernameView(path: $path)
-                }
-            }
-            .navigationDestination(for: AccountValidationDestination.self) {
-                destination in switch destination {
                 case .CreateCreatorRoomView: CreateCreatorRoomView(path: $path)
-                }
-            }
-            .navigationDestination(for: CreateUsernameDestination.self) {
-                destination in switch destination {
                 case .CreateProfilePictureView: CreateProfilePictureView()
                 }
             }

@@ -7,14 +7,10 @@
 
 import SwiftUI
 
-enum AccountValidationDestination: Hashable {
-    case CreateCreatorRoomView
-}
-
 struct AccountValidationView: View {
     let platform: String
     @Binding var path: NavigationPath
-    @State var name: String = ""
+    @State private var name: String = ""
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -43,7 +39,7 @@ struct AccountValidationView: View {
             .disableAutocorrection(true)
             
             Button(action: {
-                path.append(AccountValidationDestination.CreateCreatorRoomView)
+                path.append(authRoute.CreateCreatorRoomView)
             }, label: {
                 Text("Submit")
                     .frame(maxWidth: .infinity)

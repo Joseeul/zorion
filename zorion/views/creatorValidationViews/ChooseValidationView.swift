@@ -7,11 +7,6 @@
 
 import SwiftUI
 
-enum ChooseValidationDestination: Hashable {
-    case AccountValidationView(platform: String)
-    case CreateUsernameView
-}
-
 struct ChooseValidationView: View {
     @Binding var path: NavigationPath
     
@@ -32,14 +27,14 @@ struct ChooseValidationView: View {
             
             Group {
                 Button(action: {
-                    path.append(ChooseValidationDestination.AccountValidationView(platform: "Tiktok"))
+                    path.append(authRoute.AccountValidationView(platform: "TikTok"))
                 }, label: {
                     Image("tiktok_logo")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 16)
                     
-                    Text("Verify with Tiktok")
+                    Text("Verify with TikTok")
                         .font(.subheadline)
                         .fontWeight(.semibold)
                         .foregroundColor(.black)
@@ -55,7 +50,7 @@ struct ChooseValidationView: View {
                 .padding(.bottom, 8)
                 
                 Button(action: {
-                    path.append(ChooseValidationDestination.AccountValidationView(platform: "YouTube"))
+                    path.append(authRoute.AccountValidationView(platform: "YouTube"))
                 }, label: {
                     Image("youtube_logo")
                         .resizable()
@@ -79,7 +74,7 @@ struct ChooseValidationView: View {
                 .padding(.bottom, 8)
                 
                 Button(action: {
-                    path.append(ChooseValidationDestination.AccountValidationView(platform: "Instagram"))
+                    path.append(authRoute.AccountValidationView(platform: "Instagram"))
                 }, label: {
                     Image("instagram_logo")
                         .resizable()
@@ -102,7 +97,7 @@ struct ChooseValidationView: View {
                 .padding(.bottom, 8)
                 
                 Button(action: {
-                    path.append(ChooseValidationDestination.CreateUsernameView)
+                    path.append(authRoute.CreateUsernameView)
                 }, label: {
                     Text("I'm not a content creator")
                         .frame(maxWidth: .infinity)

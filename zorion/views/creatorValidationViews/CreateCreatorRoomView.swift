@@ -7,13 +7,9 @@
 
 import SwiftUI
 
-enum CreateCreatorRoomDestination: Hashable {
-    case CreateUsernameView
-}
-
 struct CreateCreatorRoomView: View {
-    @State var roomName: String = ""
-    @State var roomDesc: String = ""
+    @State private var roomName: String = ""
+    @State private var roomDesc: String = ""
     @Binding var path: NavigationPath
     
     var body: some View {
@@ -76,7 +72,7 @@ struct CreateCreatorRoomView: View {
                 .padding(.top, 8)
             
             Button(action: {
-                path.append(CreateCreatorRoomDestination.CreateUsernameView)
+                path.append(authRoute.CreateUsernameView)
             }, label: {
                 Text("Create room")
                     .frame(maxWidth: .infinity)
