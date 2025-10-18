@@ -10,7 +10,28 @@ import SwiftUI
 struct AccountValidationView: View {
     let platform: String
     @Binding var path: NavigationPath
-    @State private var name: String = ""
+    @State private var inputedName: String = ""
+    @State private var isShowingAlert: Bool = false
+    @State private var alertTitle: String = ""
+    @State private var alertMessage: String = ""
+    
+    func handleValidation() {
+        if inputedName.isEmpty {
+            self.alertTitle = "Missing Input"
+            self.alertMessage = "Please fill all the field."
+            self.isShowingAlert = true
+            return
+        }
+        
+        if inputedName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            self.alertTitle = "Missing Input"
+            self.alertMessage = "Please fill all the field."
+            self.isShowingAlert = true
+            return
+        }
+        
+        path.append(authRoute.CreateCreatorRoomView)
+    }
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -24,7 +45,7 @@ struct AccountValidationView: View {
             
             TextField(
                 "Name",
-                text: $name
+                text: $inputedName
             )
             .padding(.vertical, 12)
             .padding(.horizontal, 8)
@@ -39,7 +60,7 @@ struct AccountValidationView: View {
             .disableAutocorrection(true)
             
             Button(action: {
-                path.append(authRoute.CreateCreatorRoomView)
+                handleValidation()
             }, label: {
                 Text("Submit")
                     .frame(maxWidth: .infinity)
@@ -62,10 +83,16 @@ struct AccountValidationView: View {
             
             Spacer()
         }
+        .alert(alertTitle, isPresented: $isShowingAlert, presenting: alertMessage) {
+            message in Button("OK", role: .cancel) {}
+        } message: {
+            message in Text(message)
+        }
         .onTapGesture {
             hideKeyboard()
         }
         .padding()
+        .tint(Color.zorionPrimary)
     }
 }
 

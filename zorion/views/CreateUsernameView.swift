@@ -9,7 +9,30 @@ import SwiftUI
 
 struct CreateUsernameView: View {
     @Binding var path: NavigationPath
-    @State private var username: String = ""
+    @State private var inputedUsername: String = ""
+    @State private var isShowingAlert: Bool = false
+    @State private var alertTitle: String = ""
+    @State private var alertMessage: String = ""
+    
+    func handleUserName() {
+        if inputedUsername.isEmpty {
+            self.alertTitle = "Missing Input"
+            self.alertMessage = "Please fill all the field."
+            self.isShowingAlert = true
+            return
+        }
+        
+        if inputedUsername.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            self.alertTitle = "Missing Input"
+            self.alertMessage = "Please fill all the field."
+            self.isShowingAlert = true
+            return
+        }
+        
+        UserDefaults.standard.set(inputedUsername, forKey: "userUsername")
+        
+        path.append(authRoute.CreateProfilePictureView)
+    }
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -28,7 +51,7 @@ struct CreateUsernameView: View {
             
             TextField(
                 "Username",
-                text: $username
+                text: $inputedUsername
             )
             .padding(.vertical, 12)
             .padding(.horizontal, 8)
@@ -43,7 +66,7 @@ struct CreateUsernameView: View {
             .disableAutocorrection(true)
             
             Button(action: {
-                path.append(authRoute.CreateProfilePictureView)
+                handleUserName()
             }, label: {
                 Text("Submit")
                     .frame(maxWidth: .infinity)
@@ -63,7 +86,13 @@ struct CreateUsernameView: View {
         .onTapGesture {
             hideKeyboard()
         }
+        .alert(alertTitle, isPresented: $isShowingAlert, presenting: alertMessage) {
+            message in Button("OK", role: .cancel) {}
+        } message: {
+            message in Text(message)
+        }
         .padding()
+        .tint(Color.zorionPrimary)
     }
 }
 
