@@ -54,8 +54,23 @@ struct AuthController {
         }
     }
     
-    // SIGN OUT
+    // DISCORD auth
+    func discordAuth() async -> Bool {
+        do {
+            try await client.auth.signInWithOAuth(
+                provider: .discord,
+                redirectTo: URL(string: "com.app.zorion://login-callback")!
+            )
+            
+            print("✅ Discord auth success")
+            return true
+        } catch {
+            print("❌ Discord auth failed: \(error.localizedDescription)")
+            return false
+        }
+    }
     
+    // SIGN OUT
     func signOutUser() async -> Bool {
         do {
             try await client.auth.signOut()

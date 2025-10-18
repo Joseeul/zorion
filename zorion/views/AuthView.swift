@@ -142,11 +142,7 @@ struct AuthView: View {
                 .padding([.top, .bottom], 16)
                 
                 Group {
-                    Button(action: {
-                        Task {
-                            await AuthController().googleAuth()
-                        }
-                    }, label: {
+                    Button(action: {}, label: {
                         Image("google_logo")
                             .resizable()
                             .scaledToFit()
@@ -167,13 +163,36 @@ struct AuthView: View {
                     )
                     .padding(.bottom, 8)
                     
-                    Button(action: {}, label: {
-                        Image("microsoft_logo")
+                    Button(action: {
+                        Task {
+                            await AuthController().discordAuth()
+                        }
+                    }, label: {
+                        Image("discord_logo")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 16)
                         
-                        Text("Continue with Microsoft")
+                        Text("Continue with Discord")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.black)
+                    })
+                    .frame(maxWidth: .infinity)
+                    .padding([.top, .bottom], 12)
+                    .padding([.trailing, .leading], 8)
+                    .cornerRadius(8)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.zorionGray, lineWidth: 0.5)
+                    )
+                    
+                    Button(action: {
+                        Task {
+                            await AuthController().signOutUser()
+                        }
+                    }, label: {
+                        Text("SIGN OUT BUTTON")
                             .font(.subheadline)
                             .fontWeight(.semibold)
                             .foregroundColor(.black)
