@@ -8,9 +8,34 @@
 import SwiftUI
 
 struct CreateCreatorRoomView: View {
-    @State private var roomName: String = ""
-    @State private var roomDesc: String = ""
     @Binding var path: NavigationPath
+    @State private var inputedRoomName: String = ""
+    @State private var inputedRoomDesc: String = ""
+    @State private var isShowingAlert: Bool = false
+    @State private var alertTitle: String = ""
+    @State private var alertMessage: String = ""
+    
+    func handleCreateRoom() {
+        if inputedRoomName.isEmpty || inputedRoomDesc.isEmpty {
+            self.alertTitle = "Missing Input"
+            self.alertMessage = "Please fill all the field."
+            self.isShowingAlert = true
+            return
+        }
+        
+        if inputedRoomName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || inputedRoomDesc.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            self.alertTitle = "Missing Input"
+            self.alertMessage = "Please fill all the field."
+            self.isShowingAlert = true
+            return
+        }
+        
+        UserDefaults.standard.set(inputedRoomName, forKey: "roomName")
+        UserDefaults.standard.set(inputedRoomDesc, forKey: "roomDesc")
+        // TODO: user default untuk ambil asset dari xcassets
+        
+        path.append(authRoute.CreateUsernameView)
+    }
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -28,7 +53,7 @@ struct CreateCreatorRoomView: View {
             
             TextField(
                 "Enter your room name",
-                text: $roomName
+                text: $inputedRoomName
             )
             .padding(.vertical, 12)
             .padding(.horizontal, 8)
@@ -48,7 +73,7 @@ struct CreateCreatorRoomView: View {
             
             TextField(
                 "Enter your room description",
-                text: $roomDesc
+                text: $inputedRoomDesc
             )
             .padding(.vertical, 12)
             .padding(.horizontal, 8)
@@ -62,7 +87,7 @@ struct CreateCreatorRoomView: View {
             .padding(.top, 4)
             .disableAutocorrection(true)
             
-            Text("\(roomDesc.count)/30 characters")
+            Text("\(inputedRoomDesc.count)/30 characters")
                 .font(.caption2)
                 .foregroundColor(.zorionGray)
                 .padding(.top, 4)
@@ -186,7 +211,7 @@ struct CreateCreatorRoomView: View {
             }
             
             Button(action: {
-                path.append(authRoute.CreateUsernameView)
+                handleCreateRoom()
             }, label: {
                 Text("Create room")
                     .frame(maxWidth: .infinity)
@@ -206,7 +231,13 @@ struct CreateCreatorRoomView: View {
         .onTapGesture {
             hideKeyboard()
         }
+        .alert(alertTitle, isPresented: $isShowingAlert, presenting: alertMessage) {
+            message in Button("OK", role: .cancel) {}
+        } message: {
+            message in Text(message)
+        }
         .padding()
+        .tint(Color.zorionPrimary)
     }
 }
 

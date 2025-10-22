@@ -6,13 +6,35 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		9CB706122EA0B34700D6E14D /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = 9CB706112EA0B34700D6E14D /* Auth */; };
+		9CB706142EA0B34700D6E14D /* Functions in Frameworks */ = {isa = PBXBuildFile; productRef = 9CB706132EA0B34700D6E14D /* Functions */; };
+		9CB706162EA0B34700D6E14D /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = 9CB706152EA0B34700D6E14D /* PostgREST */; };
+		9CB706182EA0B34700D6E14D /* Realtime in Frameworks */ = {isa = PBXBuildFile; productRef = 9CB706172EA0B34700D6E14D /* Realtime */; };
+		9CB7061A2EA0B34700D6E14D /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = 9CB706192EA0B34700D6E14D /* Storage */; };
+		9CB706222EA0B65600D6E14D /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 9CB706212EA0B65600D6E14D /* Supabase */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		9CF4A6852E98FC9A0021139D /* zorion.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = zorion.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		9CE5F39B2EA356B100CED078 /* Exceptions for "zorion" folder in "zorion" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 9CF4A6842E98FC9A0021139D /* zorion */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		9CF4A6872E98FC9A0021139D /* zorion */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				9CE5F39B2EA356B100CED078 /* Exceptions for "zorion" folder in "zorion" target */,
+			);
 			path = zorion;
 			sourceTree = "<group>";
 		};
@@ -23,16 +45,30 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CB706162EA0B34700D6E14D /* PostgREST in Frameworks */,
+				9CB706142EA0B34700D6E14D /* Functions in Frameworks */,
+				9CB706222EA0B65600D6E14D /* Supabase in Frameworks */,
+				9CB706122EA0B34700D6E14D /* Auth in Frameworks */,
+				9CB7061A2EA0B34700D6E14D /* Storage in Frameworks */,
+				9CB706182EA0B34700D6E14D /* Realtime in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9CB706202EA0B65600D6E14D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		9CF4A67C2E98FC9A0021139D = {
 			isa = PBXGroup;
 			children = (
 				9CF4A6872E98FC9A0021139D /* zorion */,
+				9CB706202EA0B65600D6E14D /* Frameworks */,
 				9CF4A6862E98FC9A0021139D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -65,6 +101,12 @@
 			);
 			name = zorion;
 			packageProductDependencies = (
+				9CB706112EA0B34700D6E14D /* Auth */,
+				9CB706132EA0B34700D6E14D /* Functions */,
+				9CB706152EA0B34700D6E14D /* PostgREST */,
+				9CB706172EA0B34700D6E14D /* Realtime */,
+				9CB706192EA0B34700D6E14D /* Storage */,
+				9CB706212EA0B65600D6E14D /* Supabase */,
 			);
 			productName = zorion;
 			productReference = 9CF4A6852E98FC9A0021139D /* zorion.app */;
@@ -94,6 +136,9 @@
 			);
 			mainGroup = 9CF4A67C2E98FC9A0021139D;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				9CB706102EA0B34700D6E14D /* XCRemoteSwiftPackageReference "supabase-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9CF4A6862E98FC9A0021139D /* Products */;
 			projectDirPath = "";
@@ -256,14 +301,17 @@
 				DEVELOPMENT_TEAM = 7GCU57778G;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = zorion/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Zorion;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -292,14 +340,17 @@
 				DEVELOPMENT_TEAM = 7GCU57778G;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = zorion/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Zorion;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -340,6 +391,50 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		9CB706102EA0B34700D6E14D /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase-community/supabase-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		9CB706112EA0B34700D6E14D /* Auth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9CB706102EA0B34700D6E14D /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Auth;
+		};
+		9CB706132EA0B34700D6E14D /* Functions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9CB706102EA0B34700D6E14D /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Functions;
+		};
+		9CB706152EA0B34700D6E14D /* PostgREST */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9CB706102EA0B34700D6E14D /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = PostgREST;
+		};
+		9CB706172EA0B34700D6E14D /* Realtime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9CB706102EA0B34700D6E14D /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Realtime;
+		};
+		9CB706192EA0B34700D6E14D /* Storage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9CB706102EA0B34700D6E14D /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Storage;
+		};
+		9CB706212EA0B65600D6E14D /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9CB706102EA0B34700D6E14D /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 9CF4A67D2E98FC9A0021139D /* Project object */;
 }
