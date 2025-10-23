@@ -97,6 +97,7 @@ struct ChooseValidationView: View {
                 .padding(.bottom, 8)
                 
                 Button(action: {
+                    UserDefaults.standard.set(false, forKey: "isContentCreator")
                     path.append(authRoute.CreateUsernameView)
                 }, label: {
                     Text("I'm not a content creator")

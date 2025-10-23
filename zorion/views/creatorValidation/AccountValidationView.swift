@@ -14,8 +14,9 @@ struct AccountValidationView: View {
     @State private var isShowingAlert: Bool = false
     @State private var alertTitle: String = ""
     @State private var alertMessage: String = ""
+    @State private var creatorData: CreatorVerifyData?
     
-    func handleValidation() {
+    func handleValidation() async {
         if inputedName.isEmpty {
             self.alertTitle = "Missing Input"
             self.alertMessage = "Please fill all the field."
@@ -30,7 +31,21 @@ struct AccountValidationView: View {
             return
         }
         
-        path.append(authRoute.CreateCreatorRoomView)
+        do {
+            creatorData = try await checkCreatorVerify(platform: platform, username: inputedName)
+        } catch {
+            print(error.localizedDescription)
+        }
+        
+        if creatorData?.followers ?? 0 >= 1000 {
+            UserDefaults.standard.set(true, forKey: "isContentCreator")
+            path.append(authRoute.CreateCreatorRoomView)
+        } else {
+            self.alertTitle = "You don't currently meet the qualifications"
+            self.alertMessage = "Switch to another platform or register as a non-content creator."
+            self.isShowingAlert = true
+            return
+        }
     }
     
     var body: some View {
@@ -60,7 +75,9 @@ struct AccountValidationView: View {
             .disableAutocorrection(true)
             
             Button(action: {
-                handleValidation()
+                Task {
+                    await handleValidation()
+                }
             }, label: {
                 Text("Submit")
                     .frame(maxWidth: .infinity)
