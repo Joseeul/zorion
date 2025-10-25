@@ -12,6 +12,7 @@ struct AccountValidationView: View {
     @Binding var path: NavigationPath
     @State private var inputedName: String = ""
     @State private var isShowingAlert: Bool = false
+    @State private var isLoading: Bool = false
     @State private var alertTitle: String = ""
     @State private var alertMessage: String = ""
     @State private var creatorData: CreatorVerifyData?
@@ -31,20 +32,24 @@ struct AccountValidationView: View {
             return
         }
         
+        isLoading = true
+        
         do {
             creatorData = try await checkCreatorVerify(platform: platform, username: inputedName)
         } catch {
+            isLoading = false
             print(error.localizedDescription)
         }
         
         if creatorData?.followers ?? 0 >= 1000 {
             UserDefaults.standard.set(true, forKey: "isContentCreator")
+            isLoading = false
             path.append(authRoute.CreateCreatorRoomView)
         } else {
+            isLoading = false
             self.alertTitle = "You don't currently meet the qualifications"
             self.alertMessage = "Switch to another platform or register as a non-content creator."
             self.isShowingAlert = true
-            return
         }
     }
     
@@ -79,10 +84,15 @@ struct AccountValidationView: View {
                     await handleValidation()
                 }
             }, label: {
-                Text("Submit")
-                    .frame(maxWidth: .infinity)
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
+                if isLoading {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                } else {
+                    Text("Submit")
+                        .frame(maxWidth: .infinity)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                }
             })
             .frame(maxWidth: .infinity)
             .padding([.top, .bottom], 12)
@@ -91,6 +101,7 @@ struct AccountValidationView: View {
             .foregroundStyle(.white)
             .cornerRadius(8)
             .padding(.top, 8)
+            .disabled(isLoading)
             
             Text("*If you're a content creator, you'll need to validate your account first. If verification is successful, you'll automatically receive a content creator room and a content creator badge. Please note that to earn the content creator badge or creator room, you must have at least 1,000 followers/subscribers on the platform you're validating.")
                 .font(.subheadline)

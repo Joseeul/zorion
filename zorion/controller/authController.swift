@@ -13,73 +13,61 @@ struct AuthController {
     private let client = SupabaseManager.shared.client
     
     // register user dengan email dan password
-    func registerUser(email: String, password: String) async -> Bool {
-        do {
-            try await client.auth.signUp(email: email, password: password)
-            
-            print("✅ Register with email and password success")
-            return true
-        } catch {
-            print("❌ Register with email and password failed: \(error.localizedDescription)")
-            return false
-        }
+    func registerUser(email: String, password: String) async throws {
+        try await client.auth.signUp(email: email, password: password)
+        
+        let user = try await client.auth.user()
+        let userId = user.id.uuidString
+        UserDefaults.standard.set(userId, forKey: "userId")
+        
+        print("✅ Register with email and password success")
     }
     
     // login user dengan email dan password
-    func loginUser(email: String, password: String) async -> Bool {
-        do {
-            try await client.auth.signIn(email: email, password: password)
-            
-            print("✅ Login with email and password success")
-            return true
-        } catch {
-            print("❌ Login with email and password failed: \(error.localizedDescription)")
-            return false
-        }
+    func loginUser(email: String, password: String) async throws {
+        try await client.auth.signIn(email: email, password: password)
+        
+        let user = try await client.auth.user()
+        let userId = user.id.uuidString
+        UserDefaults.standard.set(userId, forKey: "userId")
+        
+        print("✅ Login with email and password success")
     }
     
     // GOOGLE auth
-    func googleAuth() async -> Bool {
-        do {
-            try await client.auth.signInWithOAuth(
-                provider: .google,
-                redirectTo: URL(string: "com.app.zorion://login-callback")!
-            )
-            
-            print("✅ Google auth success")
-            return true
-        } catch {
-            print("❌ Google auth failed: \(error.localizedDescription)")
-            return false
-        }
+    func googleAuth() async throws {
+        try await client.auth.signInWithOAuth(
+            provider: .google,
+            redirectTo: URL(string: "com.app.zorion://login-callback")!
+        )
+        
+        let user = try await client.auth.user()
+        let userId = user.id.uuidString
+        UserDefaults.standard.set(userId, forKey: "userId")
+        
+        print("✅ Google auth success")
     }
     
     // DISCORD auth
-    func discordAuth() async -> Bool {
-        do {
-            try await client.auth.signInWithOAuth(
-                provider: .discord,
-                redirectTo: URL(string: "com.app.zorion://login-callback")!
-            )
-            
-            print("✅ Discord auth success")
-            return true
-        } catch {
-            print("❌ Discord auth failed: \(error.localizedDescription)")
-            return false
-        }
+    func discordAuth() async throws {
+        try await client.auth.signInWithOAuth(
+            provider: .discord,
+            redirectTo: URL(string: "com.app.zorion://login-callback")!
+        )
+        
+        let user = try await client.auth.user()
+        let userId = user.id.uuidString
+        UserDefaults.standard.set(userId, forKey: "userId")
+        
+        print("✅ Discord auth success")
     }
     
     // SIGN OUT
-    func signOutUser() async -> Bool {
-        do {
-            try await client.auth.signOut()
-            
-            print("✅ Sign out success")
-            return true
-        } catch {
-            print("❌ Sign out failed: \(error.localizedDescription)")
-            return false
-        }
+    func signOutUser() async throws {
+        try await client.auth.signOut()
+        
+        UserDefaults.standard.set("", forKey: "userId")
+        
+        print("✅ Sign out success")
     }
 }

@@ -11,14 +11,16 @@ import SwiftUI
 struct zorionApp: App {
     @State var showingSplash = true
     
-    // TODO: nanti disini harus ditambahin validasi apakah user sudah ada atau belum. kalo belum ada ke login, kalau sudah ada langsung ke home
+    @AppStorage("isLogin") var loggedUser: Bool = false
     
     var body: some Scene {
         WindowGroup {
             if showingSplash {
                 SplashView(showingSplash: $showingSplash)
-            } else {
+            } else if loggedUser == false {
                 AuthView()
+            } else {
+                HomeView()
             }
         }
     }
