@@ -8,6 +8,40 @@
 import SwiftUI
 
 struct CreateProfilePictureView: View {
+    @State private var selectedProfilePicture: String = ""
+    @State private var isShowingAlert: Bool = false
+    @State private var isLoading: Bool = false
+    @State private var alertTitle: String = ""
+    @State private var alertMessage: String = ""
+    
+    func handleSubmit() async {
+        if selectedProfilePicture.isEmpty {
+            self.alertTitle = "Missing Input"
+            self.alertMessage = "Please choose a profile picture."
+            self.isShowingAlert = true
+            return
+        }
+        
+        isLoading = true
+        
+        UserDefaults.standard.set(selectedProfilePicture, forKey: "userProfilePicture")
+        
+        do {
+            isLoading = false
+            try await registerNewUser()
+            
+            UserDefaults.standard.set(true, forKey: "isLogin")
+        } catch {
+            isLoading = false
+            self.alertTitle = "Oops.. There Is An Error"
+            self.alertMessage = "\(error.localizedDescription)"
+            self.isShowingAlert = true
+            return
+        }
+        
+        isLoading = false
+    }
+    
     var body: some View {
         VStack(alignment: .leading) {
             Text("Select a profile picture that best")
@@ -39,7 +73,9 @@ struct CreateProfilePictureView: View {
                             .stroke(.zorionGray, lineWidth: 0.5)
                     )
                     
-                    Button(action: {}, label: {
+                    Button(action: {
+                        selectedProfilePicture = "profile_orange"
+                    }, label: {
                         Image("profile_orange")
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -52,7 +88,9 @@ struct CreateProfilePictureView: View {
                             .stroke(.zorionGray, lineWidth: 1)
                     )
                     
-                    Button(action: {}, label: {
+                    Button(action: {
+                        selectedProfilePicture = "profile_black"
+                    }, label: {
                         Image("profile_black")
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -65,8 +103,9 @@ struct CreateProfilePictureView: View {
                             .stroke(.zorionGray, lineWidth: 1)
                     )
                     
-                    
-                    Button(action: {}, label: {
+                    Button(action: {
+                        selectedProfilePicture = "profile_red"
+                    }, label: {
                         Image("profile_red")
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -81,7 +120,9 @@ struct CreateProfilePictureView: View {
                 }
                 
                 HStack(spacing: 24) {
-                    Button(action: {}, label: {
+                    Button(action: {
+                        selectedProfilePicture = "profile_green"
+                    }, label: {
                         Image("profile_green")
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -94,7 +135,9 @@ struct CreateProfilePictureView: View {
                             .stroke(.zorionGray, lineWidth: 1)
                     )
                     
-                    Button(action: {}, label: {
+                    Button(action: {
+                        selectedProfilePicture = "profile_blue"
+                    }, label: {
                         Image("profile_blue")
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -107,7 +150,9 @@ struct CreateProfilePictureView: View {
                             .stroke(.zorionGray, lineWidth: 1)
                     )
                     
-                    Button(action: {}, label: {
+                    Button(action: {
+                        selectedProfilePicture = "profile_pink"
+                    }, label: {
                         Image("profile_pink")
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -121,7 +166,9 @@ struct CreateProfilePictureView: View {
                     )
                     
                     
-                    Button(action: {}, label: {
+                    Button(action: {
+                        selectedProfilePicture = "profile_dark_blue"
+                    }, label: {
                         Image("profile_dark_blue")
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -137,11 +184,23 @@ struct CreateProfilePictureView: View {
                 .padding(.top, 8)
             }
             
-            Button(action: {}, label: {
-                Text("Submit")
-                    .frame(maxWidth: .infinity)
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
+            Text("Image selected: \(selectedProfilePicture)")
+                .padding(.top, 8)
+            
+            Button(action: {
+                Task {
+                    await handleSubmit()
+                }
+            }, label: {
+                if isLoading {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                } else {
+                    Text("Submit")
+                        .frame(maxWidth: .infinity)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                }
             })
             .frame(maxWidth: .infinity)
             .padding([.top, .bottom], 12)
@@ -150,10 +209,17 @@ struct CreateProfilePictureView: View {
             .foregroundStyle(.white)
             .cornerRadius(8)
             .padding(.top, 8)
+            .disabled(isLoading)
             
             Spacer()
         }
         .padding()
+        .alert(alertTitle, isPresented: $isShowingAlert, presenting: alertMessage) {
+            message in Button("OK", role: .cancel) {}
+        } message: {
+            message in Text(message)
+        }
+        .tint(Color.zorionPrimary)
     }
 }
 

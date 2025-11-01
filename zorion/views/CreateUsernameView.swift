@@ -14,7 +14,7 @@ struct CreateUsernameView: View {
     @State private var alertTitle: String = ""
     @State private var alertMessage: String = ""
     
-    func handleUserName() {
+    func handleUserName() async {
         if inputedUsername.isEmpty {
             self.alertTitle = "Missing Input"
             self.alertMessage = "Please fill all the field."
@@ -66,7 +66,9 @@ struct CreateUsernameView: View {
             .disableAutocorrection(true)
             
             Button(action: {
-                handleUserName()
+                Task {
+                    await handleUserName()
+                }
             }, label: {
                 Text("Submit")
                     .frame(maxWidth: .infinity)

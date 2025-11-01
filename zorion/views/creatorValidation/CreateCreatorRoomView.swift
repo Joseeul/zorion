@@ -14,6 +14,7 @@ struct CreateCreatorRoomView: View {
     @State private var isShowingAlert: Bool = false
     @State private var alertTitle: String = ""
     @State private var alertMessage: String = ""
+    @State private var selectedRoomPicture: String = ""
     
     func handleCreateRoom() {
         if inputedRoomName.isEmpty || inputedRoomDesc.isEmpty {
@@ -30,9 +31,16 @@ struct CreateCreatorRoomView: View {
             return
         }
         
+        if selectedRoomPicture.isEmpty {
+            self.alertTitle = "Missing Input"
+            self.alertMessage = "Please choose a room picture."
+            self.isShowingAlert = true
+            return
+        }
+        
         UserDefaults.standard.set(inputedRoomName, forKey: "roomName")
         UserDefaults.standard.set(inputedRoomDesc, forKey: "roomDesc")
-        // TODO: user default untuk ambil asset dari xcassets
+        UserDefaults.standard.set(selectedRoomPicture, forKey: "userRoomPicture")
         
         path.append(authRoute.CreateUsernameView)
     }
@@ -112,7 +120,9 @@ struct CreateCreatorRoomView: View {
                             .stroke(.zorionGray, lineWidth: 0.5)
                     )
                     
-                    Button(action: {}, label: {
+                    Button(action: {
+                        selectedRoomPicture = "chat_orange"
+                    }, label: {
                         Image("chat_orange")
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -125,7 +135,9 @@ struct CreateCreatorRoomView: View {
                             .stroke(.zorionGray, lineWidth: 1)
                     )
                     
-                    Button(action: {}, label: {
+                    Button(action: {
+                        selectedRoomPicture = "chat_black"
+                    }, label: {
                         Image("chat_black")
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -139,7 +151,9 @@ struct CreateCreatorRoomView: View {
                     )
                     
                     
-                    Button(action: {}, label: {
+                    Button(action: {
+                        selectedRoomPicture = "chat_red"
+                    }, label: {
                         Image("chat_red")
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -154,7 +168,9 @@ struct CreateCreatorRoomView: View {
                 }
                 
                 HStack(spacing: 24) {
-                    Button(action: {}, label: {
+                    Button(action: {
+                        selectedRoomPicture = "chat_green"
+                    }, label: {
                         Image("chat_green")
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -167,7 +183,9 @@ struct CreateCreatorRoomView: View {
                             .stroke(.zorionGray, lineWidth: 1)
                     )
                     
-                    Button(action: {}, label: {
+                    Button(action: {
+                        selectedRoomPicture = "chat_blue"
+                    }, label: {
                         Image("chat_blue")
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -180,7 +198,9 @@ struct CreateCreatorRoomView: View {
                             .stroke(.zorionGray, lineWidth: 1)
                     )
                     
-                    Button(action: {}, label: {
+                    Button(action: {
+                        selectedRoomPicture = "chat_pink"
+                    }, label: {
                         Image("chat_pink")
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -194,7 +214,9 @@ struct CreateCreatorRoomView: View {
                     )
                     
                     
-                    Button(action: {}, label: {
+                    Button(action: {
+                        selectedRoomPicture = "chat_dark_blue"
+                    }, label: {
                         Image("chat_dark_blue")
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -209,6 +231,9 @@ struct CreateCreatorRoomView: View {
                 }
                 .padding(.top, 8)
             }
+            
+            Text("Image selected: \(selectedRoomPicture)")
+                .padding(.top, 8)
             
             Button(action: {
                 handleCreateRoom()

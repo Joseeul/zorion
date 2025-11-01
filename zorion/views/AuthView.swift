@@ -16,10 +16,13 @@ struct AuthView: View {
     @State private var inputedPassword: String = ""
     @State private var isSignIn: Bool = true //buat nandain sekarang lagi signin/signup (untuk conditional rendering)
     @State private var isShowingAlert: Bool = false
+    @State private var isLoading: Bool = false
     @State private var alertTitle: String = ""
     @State private var alertMessage: String = ""
     
-    func handleAuth() {
+    func handleAuth() async {
+        UserDefaults.standard.set(false, forKey: "useOauth")
+        
         if inputedEmail.isEmpty || inputedPassword.isEmpty {
             self.alertTitle = "Missing Input"
             self.alertMessage = "Please fill all the field."
@@ -42,12 +45,70 @@ struct AuthView: View {
         }
         
         if isSignIn {
-            // kalo true langsung panggil function signin
+            do {
+                isLoading = true
+                try await AuthController().loginUser(email: inputedEmail, password: inputedPassword)
+                UserDefaults.standard.set(true, forKey: "isLogin")
+            } catch {
+                isLoading = false
+                self.alertTitle = "Oops.. There Is An Error"
+                self.alertMessage = "\(error.localizedDescription)"
+                self.isShowingAlert = true
+                return
+            }
         } else {
             UserDefaults.standard.set(inputedEmail, forKey: "userEmail")
             UserDefaults.standard.set(inputedPassword, forKey: "userPassword")
 
             path.append(authRoute.ChooseValidationView)
+        }
+        
+        isLoading = false
+    }
+    
+    func handleGoogleAuth() async {
+        UserDefaults.standard.set(true, forKey: "useOauth")
+        
+        do {
+            isLoading = true
+            try await AuthController().googleAuth()
+            
+            let data = try await checkUserData()
+            
+            if data == 0 {
+                path.append(authRoute.ChooseValidationView)
+            } else {
+                UserDefaults.standard.set(true, forKey: "isLogin")
+            }
+        } catch {
+            isLoading = false
+            self.alertTitle = "Oops.. There Is An Error"
+            self.alertMessage = "\(error.localizedDescription)"
+            self.isShowingAlert = true
+            return
+        }
+    }
+    
+    func handleDiscordAuth() async {
+        UserDefaults.standard.set(true, forKey: "useOauth")
+        
+        do {
+            isLoading = true
+            try await AuthController().discordAuth()
+            
+            let data = try await checkUserData()
+            
+            if data == 0 {
+                path.append(authRoute.ChooseValidationView)
+            } else {
+                UserDefaults.standard.set(true, forKey: "isLogin")
+            }
+        } catch {
+            isLoading = false
+            self.alertTitle = "Oops.. There Is An Error"
+            self.alertMessage = "\(error.localizedDescription)"
+            self.isShowingAlert = true
+            return
         }
     }
     
@@ -78,6 +139,7 @@ struct AuthView: View {
                 .padding(.bottom, 8)
                 .keyboardType(.emailAddress)
                 .disableAutocorrection(true)
+                .textInputAutocapitalization(.never)
                 
                 SecureField(
                     "Password",
@@ -95,10 +157,17 @@ struct AuthView: View {
                 .disableAutocorrection(true)
                 
                 Button(action: {
-                    handleAuth()
+                    Task {
+                        await handleAuth()
+                    }
                 }, label: {
-                    Text(isSignIn ? "Sign In" : "Sign Up")
-                        .frame(maxWidth: .infinity)
+                    if isLoading {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    } else {
+                        Text(isSignIn ? "Sign In" : "Sign Up")
+                            .frame(maxWidth: .infinity)
+                    }
                 })
                 .frame(maxWidth: .infinity)
                 .padding([.top, .bottom], 12)
@@ -142,7 +211,11 @@ struct AuthView: View {
                 .padding([.top, .bottom], 16)
                 
                 Group {
-                    Button(action: {}, label: {
+                    Button(action: {
+                        Task {
+                            await handleGoogleAuth()
+                        }
+                    }, label: {
                         Image("google_logo")
                             .resizable()
                             .scaledToFit()
@@ -163,7 +236,11 @@ struct AuthView: View {
                     )
                     .padding(.bottom, 8)
                     
-                    Button(action: {}, label: {
+                    Button(action: {
+                        Task {
+                            await handleDiscordAuth()
+                        }
+                    }, label: {
                         Image("discord_logo")
                             .resizable()
                             .scaledToFit()
