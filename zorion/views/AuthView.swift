@@ -48,6 +48,7 @@ struct AuthView: View {
             do {
                 isLoading = true
                 try await AuthController().loginUser(email: inputedEmail, password: inputedPassword)
+                UserDefaults.standard.set(true, forKey: "isLogin")
             } catch {
                 isLoading = false
                 self.alertTitle = "Oops.. There Is An Error"
