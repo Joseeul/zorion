@@ -25,19 +25,18 @@ struct MainView: View {
     }
     
     var body: some View {
-        ZStack(alignment: .bottom) {
-            Group {
-                switch selectedTab {
-                case .discover:
-                    DiscoverView()
-                case .rooms:
-                    RoomsView()
-                case .profile:
-                    ProfileView()
-                }
+        Group {
+            switch selectedTab {
+            case .discover:
+                DiscoverView()
+            case .rooms:
+                RoomsView()
+            case .profile:
+                ProfileView()
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .safeAreaInset(edge: .bottom, spacing: 0) {
             HStack(spacing: 0) {
                 ForEach(TabItem.allCases, id: \.self) { item in
                     TabButton(selectedTab: $selectedTab, item: item)
@@ -51,7 +50,6 @@ struct MainView: View {
                     .foregroundColor(.zorionGray.opacity(0.4)),
                 alignment: .top
             )
-            
         }
         .ignoresSafeArea(.keyboard, edges: .bottom)
         .statusBarHidden(false)
