@@ -7,14 +7,27 @@
 
 import SwiftUI
 
-struct HomeView: View {
+struct RoomsView: View {
     var body: some View {
-        VStack {
-            Text("HOME VIEW")
+        VStack(alignment: .leading) {
+            HStack {
+                Image("profile_orange")
+                    .resizable()
+                    .scaledToFit()
+                    .clipShape(.circle)
+                    .frame(width: 42)
+                
+                VStack(alignment: .leading) {
+                    Text("Welcome back!")
+                    Text("Joseeul")
+                }
+            }
+            
+            Text("ROOMS VIEW")
             
             Button(action: {
                 Task {
-                   try await AuthController().signOutUser()
+                    try await AuthController().signOutUser()
                 }
                 UserDefaults.standard.set(false, forKey: "isLogin")
             }, label: {
@@ -38,5 +51,5 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView()
+    RoomsView()
 }
