@@ -65,6 +65,13 @@ struct ProfileView: View {
                     try await AuthController().signOutUser()
                 }
                 UserDefaults.standard.set(false, forKey: "isLogin")
+                UserDefaults.standard.removeObject(forKey: "userEmail")
+                UserDefaults.standard.removeObject(forKey: "userPassword")
+                UserDefaults.standard.removeObject(forKey: "isContentCreator")
+                UserDefaults.standard.removeObject(forKey: "userUsername")
+                UserDefaults.standard.removeObject(forKey: "roomName")
+                UserDefaults.standard.removeObject(forKey: "roomDesc")
+                UserDefaults.standard.removeObject(forKey: "useOauth")
             }, label: {
                 Text("LOGOUT")
                     .font(.subheadline)
