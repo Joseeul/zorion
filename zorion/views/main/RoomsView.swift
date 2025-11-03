@@ -27,6 +27,7 @@ struct RoomsView: View {
                         .fontWeight(.semibold)
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             
             Text("Your room")
                 .font(.title2)
