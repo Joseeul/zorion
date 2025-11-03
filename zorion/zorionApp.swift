@@ -20,7 +20,7 @@ struct zorionApp: App {
             } else if loggedUser == false {
                 AuthView()
             } else {
-                HomeView()
+                MainView()
             }
         }
     }
