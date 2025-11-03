@@ -46,13 +46,13 @@ struct DiscoverView: View {
                 .fontWeight(.bold)
                 .padding(.top, 12)
             
-            RoomHeader(imageUrl: "chat_blue", roomName: "Joseeul Chill Room", roomDesc: "Tempatnya ngechill sambil ngobrolin masa depan")
-            
-            RoomHeader(imageUrl: "chat_dark_blue", roomName: "Joseeul Chill Room", roomDesc: "Tempatnya ngechill sambil ngobrolin masa depan")
-            
-            RoomHeader(imageUrl: "chat_pink", roomName: "Joseeul Chill Room", roomDesc: "Tempatnya ngechill sambil ngobrolin masa depan")
-            
-            Spacer()
+            ScrollView {
+                RoomHeader(imageUrl: "chat_blue", roomName: "Joseeul Chill Room", roomDesc: "Tempatnya ngechill sambil ngobrolin masa depan")
+                
+                RoomHeader(imageUrl: "chat_dark_blue", roomName: "Joseeul Chill Room", roomDesc: "Tempatnya ngechill sambil ngobrolin masa depan")
+                
+                RoomHeader(imageUrl: "chat_pink", roomName: "Joseeul Chill Room", roomDesc: "Tempatnya ngechill sambil ngobrolin masa depan")
+            }
         }
         .padding()
     }

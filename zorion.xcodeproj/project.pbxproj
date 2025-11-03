@@ -20,7 +20,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		9CE5F39B2EA356B100CED078 /* Exceptions for "zorion" folder in "zorion" target */ = {
+		9C11876D2EB895B500DBCD0B /* Exceptions for "zorion" folder in "zorion" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -30,10 +30,10 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		9CF4A6872E98FC9A0021139D /* zorion */ = {
+		9C1187522EB895B400DBCD0B /* zorion */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				9CE5F39B2EA356B100CED078 /* Exceptions for "zorion" folder in "zorion" target */,
+				9C11876D2EB895B500DBCD0B /* Exceptions for "zorion" folder in "zorion" target */,
 			);
 			path = zorion;
 			sourceTree = "<group>";
@@ -67,9 +67,9 @@
 		9CF4A67C2E98FC9A0021139D = {
 			isa = PBXGroup;
 			children = (
-				9CF4A6872E98FC9A0021139D /* zorion */,
 				9CB706202EA0B65600D6E14D /* Frameworks */,
 				9CF4A6862E98FC9A0021139D /* Products */,
+				9C1187522EB895B400DBCD0B /* zorion */,
 			);
 			sourceTree = "<group>";
 		};
@@ -97,7 +97,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				9CF4A6872E98FC9A0021139D /* zorion */,
+				9C1187522EB895B400DBCD0B /* zorion */,
 			);
 			name = zorion;
 			packageProductDependencies = (

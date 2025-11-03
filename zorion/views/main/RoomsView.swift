@@ -40,41 +40,15 @@ struct RoomsView: View {
                 .font(.title2)
                 .fontWeight(.bold)
             
-            RoomHeader(imageUrl: "chat_blue", roomName: "Joseeul Chill Room", roomDesc: "Tempatnya ngechill sambil ngobrolin masa depan")
-            
-            RoomHeader(imageUrl: "chat_dark_blue", roomName: "Joseeul Chill Room", roomDesc: "Tempatnya ngechill sambil ngobrolin masa depan")
-            
-            RoomHeader(imageUrl: "chat_pink", roomName: "Joseeul Chill Room", roomDesc: "Tempatnya ngechill sambil ngobrolin masa depan")
-            
-            Spacer()
-        }
-        .padding()
-    }
-}
-
-struct RoomHeader: View {
-    let imageUrl: String
-    let roomName: String
-    let roomDesc: String
-    
-    var body: some View {
-        HStack {
-            Image(imageUrl)
-                .resizable()
-                .scaledToFit()
-                .clipShape(.circle)
-                .frame(width: 42)
-            
-            VStack(alignment: .leading) {
-                Text(roomName)
-                    .fontWeight(.semibold)
+            ScrollView {
+                RoomHeader(imageUrl: "chat_blue", roomName: "Joseeul Chill Room", roomDesc: "Tempatnya ngechill sambil ngobrolin masa depan")
                 
-                Text(roomDesc)
-                    .font(.footnote)
-                    .foregroundStyle(.zorionGray)
+                RoomHeader(imageUrl: "chat_dark_blue", roomName: "Joseeul Chill Room", roomDesc: "Tempatnya ngechill sambil ngobrolin masa depan")
+                
+                RoomHeader(imageUrl: "chat_pink", roomName: "Joseeul Chill Room", roomDesc: "Tempatnya ngechill sambil ngobrolin masa depan")
             }
         }
-        .padding(.vertical, 8)
+        .padding()
     }
 }
 
