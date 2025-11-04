@@ -76,6 +76,7 @@ struct TabButton: View {
             .frame(maxWidth: .infinity)
             .foregroundColor(selectedTab == item ? activeColor : inactiveColor)
         }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 

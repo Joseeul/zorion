@@ -8,23 +8,30 @@
 import SwiftUI
 
 struct RoomHeader: View {
-    let imageUrl: String
-    let roomName: String
-    let roomDesc: String
+    let imageUrl: URL?
+    let roomName: String?
+    let roomDesc: String?
     
     var body: some View {
         HStack {
-            Image(imageUrl)
-                .resizable()
-                .scaledToFit()
-                .clipShape(.circle)
-                .frame(width: 42)
+            AsyncImage(url: imageUrl) { image in
+                image
+                    .resizable()
+                    .scaledToFit()
+                    .clipShape(.circle)
+                    .frame(width: 42)
+            } placeholder: {
+                Color.gray.opacity(0.3)
+                    .frame(width: 42, height: 42)
+                    .overlay(ProgressView())
+                    .clipShape(.circle)
+            }
             
             VStack(alignment: .leading) {
-                Text(roomName)
+                Text(roomName ?? "")
                     .fontWeight(.semibold)
                 
-                Text(roomDesc)
+                Text(roomDesc ?? "")
                     .font(.footnote)
                     .foregroundStyle(.zorionGray)
             }
