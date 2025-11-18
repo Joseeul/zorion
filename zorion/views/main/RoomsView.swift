@@ -15,8 +15,6 @@ struct RoomsView: View {
     @State private var alertTitle: String = ""
     @State private var alertMessage: String = ""
     
-    var contentCreator: Bool = true
-    
     func fetchUser() async {
         isLoading = true
         
@@ -80,23 +78,23 @@ struct RoomsView: View {
                                         .foregroundStyle(.zorionGray)
                                         .fontWeight(.semibold)
                                     
-                                    Text("userName")
+                                    Text(user?.username ?? "userName")
                                         .fontWeight(.semibold)
                                 }
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
                             
-                            if contentCreator == true {
+                            if user?.content_creator == true {
                                 Text("Your room")
                                     .font(.title2)
                                     .fontWeight(.bold)
                                     .padding(.top, 12)
                                 
-                                NavigationLink(destination: DetailRoom(roomId: UUID())) {
+                                NavigationLink(destination: DetailRoom(roomId: room?.room_id ?? UUID())) {
                                     RoomHeader(
                                         imageUrl: URL(string: room?.room_picture ?? ""),
-                                        roomName: "test",
-                                        roomDesc: "description test"
+                                        roomName: room?.room_name,
+                                        roomDesc: room?.room_desc
                                     )
                                 }
                                 .buttonStyle(.plain)
@@ -107,7 +105,7 @@ struct RoomsView: View {
                                 .fontWeight(.bold)
                             
                             ForEach(0..<5) { item in
-                                NavigationLink(destination: DetailRoom(roomId: UUID())) {
+                                NavigationLink(destination: DetailRoom(roomId: room?.room_id ?? UUID())) {
                                     RoomHeader(
                                         imageUrl: URL(string: room?.room_picture ?? ""),
                                         roomName: "test",
@@ -130,6 +128,17 @@ struct RoomsView: View {
             }
         }
         .tint(Color.zorionPrimary)
+        .task {
+            if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
+                return
+            }
+            
+            await fetchUser()
+            
+            if user?.content_creator == true {
+                await fetchUserRoom()
+            }
+        }
     }
 }
 

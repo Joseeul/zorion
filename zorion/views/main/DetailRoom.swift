@@ -29,9 +29,6 @@ struct DetailRoom: View {
                         .font(.footnote)
                         .foregroundStyle(.zorionGray)
                     
-                    Text("room id: \(roomId)")
-                        .font(.footnote)
-                        .foregroundStyle(.zorionGray)
                 }
             }
             .padding(.bottom, 8)
