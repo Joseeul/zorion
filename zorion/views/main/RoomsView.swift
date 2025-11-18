@@ -67,7 +67,10 @@ struct RoomsView: View {
                                 } placeholder: {
                                     Color.gray.opacity(0.3)
                                         .frame(width: 42, height: 42)
-                                        .overlay(ProgressView())
+                                        .overlay(
+                                            ProgressView()
+                                                .tint(.gray)
+                                        )
                                         .clipShape(.circle)
                                 }
                                 
@@ -89,7 +92,7 @@ struct RoomsView: View {
                                     .fontWeight(.bold)
                                     .padding(.top, 12)
                                 
-                                NavigationLink(destination: DetailRoom()) {
+                                NavigationLink(destination: DetailRoom(roomId: UUID())) {
                                     RoomHeader(
                                         imageUrl: URL(string: room?.room_picture ?? ""),
                                         roomName: "test",
@@ -103,17 +106,16 @@ struct RoomsView: View {
                                 .font(.title2)
                                 .fontWeight(.bold)
                             
-                            RoomHeader(
-                                imageUrl: URL(string: room?.room_picture ?? ""),
-                                roomName: "public room",
-                                roomDesc: "public room description"
-                            )
-                            
-                            RoomHeader(
-                                imageUrl: URL(string: room?.room_picture ?? ""),
-                                roomName: "public room",
-                                roomDesc: "public room description"
-                            )
+                            ForEach(0..<5) { item in
+                                NavigationLink(destination: DetailRoom(roomId: UUID())) {
+                                    RoomHeader(
+                                        imageUrl: URL(string: room?.room_picture ?? ""),
+                                        roomName: "test",
+                                        roomDesc: "description test"
+                                    )
+                                }
+                                .buttonStyle(.plain)
+                            }
                             
                             Spacer()
                         }
@@ -127,6 +129,7 @@ struct RoomsView: View {
                 }
             }
         }
+        .tint(Color.zorionPrimary)
     }
 }
 

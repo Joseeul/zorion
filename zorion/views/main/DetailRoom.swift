@@ -9,6 +9,8 @@ import SwiftUI
 
 struct DetailRoom: View {
     @State private var isJoin: Bool = true
+    @State var roomId: UUID
+    @EnvironmentObject var tabBarManager: TabBarManager
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -24,6 +26,10 @@ struct DetailRoom: View {
                         .fontWeight(.semibold)
                     
                     Text("Room Desc")
+                        .font(.footnote)
+                        .foregroundStyle(.zorionGray)
+                    
+                    Text("room id: \(roomId)")
                         .font(.footnote)
                         .foregroundStyle(.zorionGray)
                 }
@@ -110,10 +116,16 @@ struct DetailRoom: View {
             Spacer()
         }
         .padding()
-        .tint(Color.zorionPrimary)
+        .onAppear {
+            tabBarManager.isVisible = false
+        }
+        .onDisappear {
+            tabBarManager.isVisible = true
+        }
     }
 }
 
 #Preview {
-    DetailRoom()
+    DetailRoom(roomId: UUID())
+        .environmentObject(TabBarManager())
 }

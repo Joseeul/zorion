@@ -23,7 +23,10 @@ struct RoomHeader: View {
             } placeholder: {
                 Color.gray.opacity(0.3)
                     .frame(width: 42, height: 42)
-                    .overlay(ProgressView())
+                    .overlay(
+                        ProgressView()
+                            .tint(.gray)
+                    )
                     .clipShape(.circle)
             }
             

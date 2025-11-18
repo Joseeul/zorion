@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MainView: View {
     @State private var selectedTab: TabItem = .rooms
+    @StateObject private var tabBarManager = TabBarManager()
     
     enum TabItem: String, CaseIterable {
         case discover = "Discover"
@@ -35,21 +36,24 @@ struct MainView: View {
                 ProfileView()
             }
         }
+        .environmentObject(tabBarManager)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            HStack(spacing: 0) {
-                ForEach(TabItem.allCases, id: \.self) { item in
-                    TabButton(selectedTab: $selectedTab, item: item)
+            if tabBarManager.isVisible {
+                HStack(spacing: 0) {
+                    ForEach(TabItem.allCases, id: \.self) { item in
+                        TabButton(selectedTab: $selectedTab, item: item)
+                    }
                 }
+                .frame(height: 70)
+                .background(Color.white)
+                .overlay(
+                    Rectangle()
+                        .frame(height: 0.2)
+                        .foregroundColor(Color.zorionGray.opacity(0.4)),
+                    alignment: .top
+                )
             }
-            .frame(height: 70)
-            .background(Color.white)
-            .overlay(
-                Rectangle()
-                    .frame(height: 0.2)
-                    .foregroundColor(.zorionGray.opacity(0.4)),
-                alignment: .top
-            )
         }
         .ignoresSafeArea(.keyboard, edges: .bottom)
         .statusBarHidden(false)
