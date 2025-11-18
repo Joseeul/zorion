@@ -110,6 +110,7 @@ struct DetailRoom: View {
             Spacer()
         }
         .padding()
+        .tint(Color.zorionPrimary)
     }
 }
 

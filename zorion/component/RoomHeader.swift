@@ -36,6 +36,5 @@ struct RoomHeader: View {
                     .foregroundStyle(.zorionGray)
             }
         }
-        .padding(.vertical, 8)
     }
 }
