@@ -10,22 +10,53 @@ import SwiftUI
 struct DetailRoom: View {
     @State private var isJoin: Bool = true
     @State var roomId: UUID
+    @State private var room: RoomModel? = nil
+    @State private var isLoading: Bool = false
+    @State private var isShowingAlert: Bool = false
+    @State private var alertTitle: String = ""
+    @State private var alertMessage: String = ""
     @EnvironmentObject var tabBarManager: TabBarManager
+    
+    func fetchRoomData() async {
+        isLoading = true
+        
+        do {
+            room = try await fetchRoomDetail(roomId: roomId)
+        } catch {
+            isLoading = false
+            self.alertTitle = "Oops.. There Is An Error"
+            self.alertMessage = "\(error.localizedDescription)"
+            self.isShowingAlert = true
+            return
+        }
+        
+        isLoading = false
+    }
     
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                Image("chat_red")
-                    .resizable()
-                    .scaledToFit()
-                    .clipShape(.circle)
-                    .frame(width: 42)
+                AsyncImage(url: URL(string: room?.room_picture ?? "")) { image in
+                    image
+                        .resizable()
+                        .scaledToFit()
+                        .clipShape(.circle)
+                        .frame(width: 42)
+                } placeholder: {
+                    Color.gray.opacity(0.3)
+                        .frame(width: 42, height: 42)
+                        .overlay(
+                            ProgressView()
+                                .tint(.gray)
+                        )
+                        .clipShape(.circle)
+                }
                 
                 VStack(alignment: .leading) {
-                    Text("Room Name")
+                    Text(room?.room_name ?? "roomName")
                         .fontWeight(.semibold)
                     
-                    Text("Room Desc")
+                    Text(room?.room_desc ?? "roomDesc")
                         .font(.footnote)
                         .foregroundStyle(.zorionGray)
                     
@@ -113,11 +144,23 @@ struct DetailRoom: View {
             Spacer()
         }
         .padding()
+        .alert(alertTitle, isPresented: $isShowingAlert, presenting: alertMessage) {
+            message in Button("OK", role: .cancel) {}
+        } message: {
+            message in Text(message)
+        }
         .onAppear {
             tabBarManager.isVisible = false
         }
         .onDisappear {
             tabBarManager.isVisible = true
+        }
+        .task {
+            if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
+                return
+            }
+            
+            await fetchRoomData()
         }
     }
 }

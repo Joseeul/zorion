@@ -11,7 +11,7 @@ import UIKit
 
 private let client = SupabaseManager.shared.client
 
-// add user kedalam tabel user
+// add room kedalam tabel room
 func addRoomData(roomName: String, roomDesc: String) async throws {
     let roomOwner = try await client.auth.user().id
     let room = InsertRoom(room_owner: roomOwner, room_name: roomName, room_desc: roomDesc)
@@ -70,7 +70,7 @@ func uploadRoomPicture() async throws {
     }
 }
 
-// insert profile picture ke table user
+// insert room picture ke table room
 func insertRoomPicture() async throws  {
     let roomPicture: String = UserDefaults.standard.string(forKey: "userRoomPicture")!
     let userId: String = UserDefaults.standard.string(forKey: "userId")!
@@ -104,13 +104,39 @@ func insertRoomPicture() async throws  {
 
 // fetch creator room data
 func fetchCreatorRoom() async throws -> RoomModel {
-    let userId: String = UserDefaults.standard.string(forKey: "userId") ?? "41485a82-94ce-4050-b60a-8d738fb72a0d"
+    let userId: String = UserDefaults.standard.string(forKey: "userId") ?? ""
     let userUUID = UUID(uuidString: userId)
     
     let result: RoomModel = try await client
         .from("room")
         .select()
         .eq("room_owner", value: userUUID)
+        .single()
+        .execute()
+        .value
+    
+    return result
+}
+
+
+// fetch semua room yang ada
+func fetchAllRoom() async throws -> [RoomModel] {
+    let result: [RoomModel] = try await client
+        .from("room")
+        .select()
+        .execute()
+        .value
+    
+    return result
+}
+
+// fetch detail room data
+
+func fetchRoomDetail(roomId: UUID) async throws -> RoomModel {
+    let result: RoomModel = try await client
+        .from("room")
+        .select()
+        .eq("room_id", value: roomId)
         .single()
         .execute()
         .value

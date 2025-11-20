@@ -114,8 +114,6 @@ struct RoomsView: View {
                                 }
                                 .buttonStyle(.plain)
                             }
-                            
-                            Spacer()
                         }
                         .padding()
                         .alert(alertTitle, isPresented: $isShowingAlert, presenting: alertMessage) {
