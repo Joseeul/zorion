@@ -101,3 +101,19 @@ func insertRoomPicture() async throws  {
         return
     }
 }
+
+// fetch creator room data
+func fetchCreatorRoom() async throws -> RoomModel {
+    let userId: String = UserDefaults.standard.string(forKey: "userId") ?? "41485a82-94ce-4050-b60a-8d738fb72a0d"
+    let userUUID = UUID(uuidString: userId)
+    
+    let result: RoomModel = try await client
+        .from("room")
+        .select()
+        .eq("room_owner", value: userUUID)
+        .single()
+        .execute()
+        .value
+    
+    return result
+}
