@@ -16,15 +16,10 @@ func addRoomData(roomName: String, roomDesc: String) async throws {
     let roomOwner = try await client.auth.user().id
     let room = InsertRoom(room_owner: roomOwner, room_name: roomName, room_desc: roomDesc)
     
-    do {
-        try await client
-            .from("room")
-            .insert(room)
-            .execute()
-    } catch {
-        print("❌ Uploading profile picture failed: \(error.localizedDescription)")
-        return
-    }
+    try await client
+        .from("room")
+        .insert(room)
+        .execute()
 }
 
 // upload room picture user kedalam bucket
@@ -71,7 +66,7 @@ func uploadRoomPicture() async throws {
 }
 
 // insert room picture ke table room
-func insertRoomPicture() async throws  {
+func insertRoomPicture() async throws {
     let roomPicture: String = UserDefaults.standard.string(forKey: "userRoomPicture")!
     let userId: String = UserDefaults.standard.string(forKey: "userId")!
     
@@ -84,22 +79,18 @@ func insertRoomPicture() async throws  {
     
     let roomId = roomData[0].room_id
     
-    do {
-        let publicUrl = try client.storage
-            .from("zorion_bucket")
-            .getPublicURL(path: "roomPicture/\(roomId)/\(roomPicture)")
-        
-        try await client
-            .from("room")
-            .update(["room_picture": publicUrl])
-            .eq("room_id", value: roomId)
-            .execute()
-        
-        print("✅ Updating room picture success")
-    } catch {
-        print("❌ Updating room picture failed: \(error.localizedDescription)")
-        return
-    }
+    // nebeng untuk insert room member pas creator buat room
+    try await insertRoomMember(roomId: roomId)
+    
+    let publicUrl = try client.storage
+        .from("zorion_bucket")
+        .getPublicURL(path: "roomPicture/\(roomId)/\(roomPicture)")
+    
+    try await client
+        .from("room")
+        .update(["room_picture": publicUrl])
+        .eq("room_id", value: roomId)
+        .execute()
 }
 
 // fetch creator room data
@@ -118,7 +109,6 @@ func fetchCreatorRoom() async throws -> RoomModel {
     return result
 }
 
-
 // fetch semua room yang ada
 func fetchAllRoom() async throws -> [RoomModel] {
     let result: [RoomModel] = try await client
@@ -131,7 +121,6 @@ func fetchAllRoom() async throws -> [RoomModel] {
 }
 
 // fetch detail room data
-
 func fetchRoomDetail(roomId: UUID) async throws -> RoomModel {
     let result: RoomModel = try await client
         .from("room")
@@ -142,4 +131,64 @@ func fetchRoomDetail(roomId: UUID) async throws -> RoomModel {
         .value
     
     return result
+}
+
+// insert room member
+func insertRoomMember(roomId: UUID) async throws {
+    let userId: UUID = try await client.auth.user().id
+    let data = InsertRoomMember(user_id: userId, room_id: roomId)
+    
+    try await client
+        .from("room_members")
+        .insert(data)
+        .execute()
+}
+
+// fetch community room user yang sudah join
+func fetchUserCommunityRoom() async throws -> [RoomModel] {
+    let userId: UUID = try await client.auth.user().id
+    
+    let data: [CommunityRoomUser] = try await client
+        .from("room_members")
+        .select("*, room(*)")
+        .eq("user_id", value: userId)
+        .execute()
+        .value
+    
+    let rooms = data.map { $0.room }
+    
+    return rooms
+}
+
+// cek apakah user sudah join di room atau belum
+func userJoinRoom() async throws -> Bool {
+    let userId: UUID = try await client.auth.user().id
+    
+    let result: [RoomMember] = try await client
+        .from("room_members")
+        .select()
+        .eq("user_id", value: userId)
+        .execute()
+        .value
+    
+    if result.isEmpty {
+        return false
+    } else {
+        return true
+    }
+        
+}
+
+// fetch semua room member
+func fetchAllRoomMember(roomId: UUID) async throws -> [UserModel] {
+    let result: [AllRoomMember] = try await client
+        .from("room_members")
+        .select("*, user(*)")
+        .eq("room_id", value: roomId)
+        .execute()
+        .value
+    
+    let users = result.map { $0.user }
+    
+    return users
 }

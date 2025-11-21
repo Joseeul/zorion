@@ -10,10 +10,12 @@ import SwiftUI
 struct RoomsView: View {
     @State private var user: UserModel? = nil
     @State private var room: RoomModel? = nil
+    @State private var communityRoom: [RoomModel] = []
     @State private var isLoading: Bool = false
     @State private var isShowingAlert: Bool = false
     @State private var alertTitle: String = ""
     @State private var alertMessage: String = ""
+    @State private var userId: UUID?
     
     func fetchUser() async {
         isLoading = true
@@ -36,6 +38,22 @@ struct RoomsView: View {
         
         do {
             room = try await fetchCreatorRoom()
+        } catch {
+            isLoading = false
+            self.alertTitle = "Oops.. There Is An Error"
+            self.alertMessage = "\(error.localizedDescription)"
+            self.isShowingAlert = true
+            return
+        }
+        
+        isLoading = false
+    }
+    
+    func fetchCommunityRoom() async {
+        isLoading = true
+        
+        do {
+            communityRoom = try await fetchUserCommunityRoom()
         } catch {
             isLoading = false
             self.alertTitle = "Oops.. There Is An Error"
@@ -104,15 +122,22 @@ struct RoomsView: View {
                                 .font(.title2)
                                 .fontWeight(.bold)
                             
-                            ForEach(0..<5) { item in
-                                NavigationLink(destination: DetailRoom(roomId: room?.room_id ?? UUID())) {
-                                    RoomHeader(
-                                        imageUrl: URL(string: room?.room_picture ?? ""),
-                                        roomName: "test",
-                                        roomDesc: "description test"
-                                    )
+                            if communityRoom.isEmpty {
+                                Text("You don't have any community room yet.")
+                                    .padding(.top, 2)
+                            } else {
+                                ForEach(0..<communityRoom.filter {
+                                    $0.room_owner != UUID(uuidString: UserDefaults.standard.string(forKey: "userId")!)
+                                }.count, id: \.self) { index in
+                                    NavigationLink(destination: DetailRoom(roomId: communityRoom[index].room_id)) {
+                                        RoomHeader(
+                                            imageUrl: URL(string: communityRoom[index].room_picture),
+                                            roomName: communityRoom[index].room_name,
+                                            roomDesc: communityRoom[index].room_desc
+                                        )
+                                    }
+                                    .buttonStyle(.plain)
                                 }
-                                .buttonStyle(.plain)
                             }
                         }
                         .padding()
@@ -132,6 +157,7 @@ struct RoomsView: View {
             }
             
             await fetchUser()
+            await fetchCommunityRoom()
             
             if user?.content_creator == true {
                 await fetchUserRoom()

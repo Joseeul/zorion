@@ -15,19 +15,20 @@ struct CreateProfilePictureView: View {
     @State private var alertMessage: String = ""
     
     func handleSubmit() async {
+        isLoading = true
+        
         if selectedProfilePicture.isEmpty {
             self.alertTitle = "Missing Input"
             self.alertMessage = "Please choose a profile picture."
             self.isShowingAlert = true
+            isLoading = false
             return
         }
-        
-        isLoading = true
         
         UserDefaults.standard.set(selectedProfilePicture, forKey: "userProfilePicture")
         
         do {
-            isLoading = false
+            isLoading = true
             try await registerNewUser()
             
             UserDefaults.standard.set(true, forKey: "isLogin")

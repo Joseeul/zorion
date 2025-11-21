@@ -112,3 +112,10 @@ func fetchSingleUserData() async throws -> UserModel {
     
     return result
 }
+
+// untuk dapetin userId yang lagi login
+func getCurrentUserId() async throws -> UUID {
+    let result: UUID = try await client.auth.user().id
+    
+    return result
+}
