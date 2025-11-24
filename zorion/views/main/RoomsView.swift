@@ -54,6 +54,7 @@ struct RoomsView: View {
         
         do {
             communityRoom = try await fetchUserCommunityRoom()
+            await filterCommunityRoom()
         } catch {
             isLoading = false
             self.alertTitle = "Oops.. There Is An Error"
@@ -63,6 +64,14 @@ struct RoomsView: View {
         }
         
         isLoading = false
+    }
+    
+    func filterCommunityRoom() async {
+        if communityRoom.isEmpty {
+            return
+        } else {
+            communityRoom.removeAll(where: {$0.room_owner == UUID(uuidString: UserDefaults.standard.string(forKey: "userId")!)})
+        }
     }
     
     var body: some View {
@@ -129,6 +138,7 @@ struct RoomsView: View {
                                 ForEach(0..<communityRoom.filter {
                                     $0.room_owner != UUID(uuidString: UserDefaults.standard.string(forKey: "userId")!)
                                 }.count, id: \.self) { index in
+                                    
                                     NavigationLink(destination: DetailRoom(roomId: communityRoom[index].room_id)) {
                                         RoomHeader(
                                             imageUrl: URL(string: communityRoom[index].room_picture),
