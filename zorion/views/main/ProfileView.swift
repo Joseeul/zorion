@@ -112,71 +112,73 @@ struct ProfileView: View {
                         .padding(.bottom, 8)
                     }
                     
-                    Group {
-                        Text("Creator Settings")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                            .padding(.vertical, 12)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        
-                        Button(action: {}, label: {
-                            Text("Change room photo")
+                    if user?.content_creator == true {
+                        Group {
+                            Text("Creator Settings")
+                                .font(.title2)
+                                .fontWeight(.bold)
+                                .padding(.vertical, 12)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                             
-                            Spacer()
+                            Button(action: {}, label: {
+                                Text("Change room photo")
+                                
+                                Spacer()
+                                
+                                Image(systemName: "chevron.right")
+                            })
+                            .frame(maxWidth: .infinity)
+                            .padding([.top, .bottom], 12)
+                            .padding([.trailing, .leading], 8)
+                            .background(.zorionSettings)
+                            .foregroundStyle(.zorionGray)
+                            .cornerRadius(8)
+                            .padding(.bottom, 8)
                             
-                            Image(systemName: "chevron.right")
-                        })
-                        .frame(maxWidth: .infinity)
-                        .padding([.top, .bottom], 12)
-                        .padding([.trailing, .leading], 8)
-                        .background(.zorionSettings)
-                        .foregroundStyle(.zorionGray)
-                        .cornerRadius(8)
-                        .padding(.bottom, 8)
-                        
-                        Button(action: {}, label: {
-                            Text("Change room name")
+                            Button(action: {}, label: {
+                                Text("Change room name")
+                                
+                                Spacer()
+                                
+                                Image(systemName: "chevron.right")
+                            })
+                            .frame(maxWidth: .infinity)
+                            .padding([.top, .bottom], 12)
+                            .padding([.trailing, .leading], 8)
+                            .background(.zorionSettings)
+                            .foregroundStyle(.zorionGray)
+                            .cornerRadius(8)
+                            .padding(.bottom, 8)
                             
-                            Spacer()
+                            Button(action: {}, label: {
+                                Text("Change room description")
+                                
+                                Spacer()
+                                
+                                Image(systemName: "chevron.right")
+                            })
+                            .frame(maxWidth: .infinity)
+                            .padding([.top, .bottom], 12)
+                            .padding([.trailing, .leading], 8)
+                            .background(.zorionSettings)
+                            .foregroundStyle(.zorionGray)
+                            .cornerRadius(8)
+                            .padding(.bottom, 8)
                             
-                            Image(systemName: "chevron.right")
-                        })
-                        .frame(maxWidth: .infinity)
-                        .padding([.top, .bottom], 12)
-                        .padding([.trailing, .leading], 8)
-                        .background(.zorionSettings)
-                        .foregroundStyle(.zorionGray)
-                        .cornerRadius(8)
-                        .padding(.bottom, 8)
-                        
-                        Button(action: {}, label: {
-                            Text("Change room description")
-                            
-                            Spacer()
-                            
-                            Image(systemName: "chevron.right")
-                        })
-                        .frame(maxWidth: .infinity)
-                        .padding([.top, .bottom], 12)
-                        .padding([.trailing, .leading], 8)
-                        .background(.zorionSettings)
-                        .foregroundStyle(.zorionGray)
-                        .cornerRadius(8)
-                        .padding(.bottom, 8)
-                        
-                        Button(action: {}, label: {
-                            Text("Manage room members")
-                            
-                            Spacer()
-                            
-                            Image(systemName: "chevron.right")
-                        })
-                        .frame(maxWidth: .infinity)
-                        .padding([.top, .bottom], 12)
-                        .padding([.trailing, .leading], 8)
-                        .background(.zorionSettings)
-                        .foregroundStyle(.zorionGray)
-                        .cornerRadius(8)
+                            Button(action: {}, label: {
+                                Text("Manage room members")
+                                
+                                Spacer()
+                                
+                                Image(systemName: "chevron.right")
+                            })
+                            .frame(maxWidth: .infinity)
+                            .padding([.top, .bottom], 12)
+                            .padding([.trailing, .leading], 8)
+                            .background(.zorionSettings)
+                            .foregroundStyle(.zorionGray)
+                            .cornerRadius(8)
+                        }
                     }
                     
                     Group {
@@ -199,7 +201,7 @@ struct ProfileView: View {
                         .background(.zorionSettings)
                         .foregroundStyle(.zorionGray)
                         .cornerRadius(8)
-                        .padding(.bottom, 8)    
+                        .padding(.bottom, 8)
                     }
                     
                     Button(action: {
