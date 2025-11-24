@@ -161,12 +161,13 @@ func fetchUserCommunityRoom() async throws -> [RoomModel] {
 }
 
 // cek apakah user sudah join di room atau belum
-func userJoinRoom() async throws -> Bool {
+func userJoinRoom(roomId: UUID) async throws -> Bool {
     let userId: UUID = try await client.auth.user().id
     
     let result: [RoomMember] = try await client
         .from("room_members")
-        .select()
+        .select("*")
+        .eq("room_id", value: roomId)
         .eq("user_id", value: userId)
         .execute()
         .value
@@ -176,7 +177,6 @@ func userJoinRoom() async throws -> Bool {
     } else {
         return true
     }
-        
 }
 
 // fetch semua room member

@@ -38,7 +38,7 @@ struct DetailRoom: View {
         isLoading = true
         
         do {
-            isJoin = try await userJoinRoom()
+            isJoin = try await userJoinRoom(roomId: roomId)
         } catch {
             isLoading = false
             self.alertTitle = "Oops.. There Is An Error"
