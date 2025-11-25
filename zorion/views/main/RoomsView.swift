@@ -16,6 +16,7 @@ struct RoomsView: View {
     @State private var alertTitle: String = ""
     @State private var alertMessage: String = ""
     @State private var userId: UUID?
+    @EnvironmentObject var tabBarManager: TabBarManager
     
     func fetchUser() async {
         isLoading = true
@@ -159,6 +160,9 @@ struct RoomsView: View {
                     }
                 }
             }
+            .onAppear {
+                tabBarManager.isVisible = true
+            }
         }
         .tint(Color.zorionPrimary)
         .task {
@@ -178,4 +182,5 @@ struct RoomsView: View {
 
 #Preview {
     RoomsView()
+        .environmentObject(TabBarManager())
 }

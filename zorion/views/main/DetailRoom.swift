@@ -67,6 +67,7 @@ struct DetailRoom: View {
     }
     
     var body: some View {
+        
         VStack(alignment: .leading) {
             if isLoading {
                 ProgressView("Loading room data...")
@@ -156,13 +157,15 @@ struct DetailRoom: View {
                         }
                     }
                 } else {
-                    Button(action: {}, label: {
-                        Text("Vote")
-                        
-                        Spacer()
-                        
-                        Image(systemName: "chevron.right")
-                    })
+                    NavigationLink(destination: VoteView()) {
+                        HStack {
+                            Text("Vote")
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                        }
+                    }
                     .frame(maxWidth: .infinity)
                     .padding([.top, .bottom], 12)
                     .padding([.trailing, .leading], 8)
@@ -170,14 +173,17 @@ struct DetailRoom: View {
                     .foregroundStyle(.zorionGray)
                     .cornerRadius(8)
                     .padding(.top, 8)
+                    .buttonStyle(.plain)
                     
-                    Button(action: {}, label: {
-                        Text("Chats")
-                        
-                        Spacer()
-                        
-                        Image(systemName: "chevron.right")
-                    })
+                    NavigationLink(destination: ChatView()) {
+                        HStack {
+                            Text("Chats")
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                        }
+                    }
                     .frame(maxWidth: .infinity)
                     .padding([.top, .bottom], 12)
                     .padding([.trailing, .leading], 8)
@@ -185,14 +191,17 @@ struct DetailRoom: View {
                     .foregroundStyle(.zorionGray)
                     .cornerRadius(8)
                     .padding(.top, 8)
+                    .buttonStyle(.plain)
                     
-                    Button(action: {}, label: {
-                        Text("Voice & video")
-                        
-                        Spacer()
-                        
-                        Image(systemName: "chevron.right")
-                    })
+                    NavigationLink(destination: ChatView()) {
+                        HStack {
+                            Text("Voice & video")
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                        }
+                    }
                     .frame(maxWidth: .infinity)
                     .padding([.top, .bottom], 12)
                     .padding([.trailing, .leading], 8)
@@ -200,6 +209,7 @@ struct DetailRoom: View {
                     .foregroundStyle(.zorionGray)
                     .cornerRadius(8)
                     .padding(.top, 8)
+                    .buttonStyle(.plain)
                 }
                 
                 Spacer()
@@ -214,12 +224,10 @@ struct DetailRoom: View {
         .onAppear {
             tabBarManager.isVisible = false
         }
-        .onDisappear {
-            tabBarManager.isVisible = true
-        }
         .tint(Color.zorionPrimary)
         .task {
             if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
+                isJoin = true
                 return
             }
             

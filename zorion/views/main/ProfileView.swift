@@ -13,6 +13,7 @@ struct ProfileView: View {
     @State private var isShowingAlert: Bool = false
     @State private var alertTitle: String = ""
     @State private var alertMessage: String = ""
+    @EnvironmentObject var tabBarManager: TabBarManager
     
     func fetchUser() async {
         isLoading = true
@@ -238,6 +239,9 @@ struct ProfileView: View {
         } message: {
             message in Text(message)
         }
+        .onAppear {
+            tabBarManager.isVisible = true
+        }
         .tint(Color.zorionPrimary)
         .task {
             if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
@@ -251,4 +255,5 @@ struct ProfileView: View {
 
 #Preview {
     ProfileView()
+        .environmentObject(TabBarManager())
 }

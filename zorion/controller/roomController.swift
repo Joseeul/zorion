@@ -192,3 +192,44 @@ func fetchAllRoomMember(roomId: UUID) async throws -> [UserModel] {
     
     return users
 }
+
+// insert chat kedalam tabel
+func insertChat(roomId: UUID, message: String, messageImage: UIImage? = nil) async throws {
+    let userId: UUID = try await client.auth.user().id
+    var imageLink: String = ""
+    
+    if messageImage != nil {
+        imageLink = try await insertChatImage(image: messageImage!, roomId: roomId)
+    }
+    
+    let data = InsertMessage(user_id: userId, room_id: roomId, message_image: imageLink, message: message)
+    
+    try await client
+        .from("messages")
+        .insert(data)
+        .execute()
+}
+
+// insert gambar chat kedalam bucket storage
+func insertChatImage(image: UIImage, roomId: UUID) async throws -> String {
+    let userId: UUID = try await client.auth.user().id
+    let imageData = image.jpegData(compressionQuality: 0.5)!
+    let fileName = "\(Int(Date().timeIntervalSince1970))"
+    
+    try await client.storage
+        .from("zorion_bucket")
+        .upload("chatImage/\(roomId)/\(userId)/\(fileName)",
+                data: imageData,
+                options: FileOptions(
+                    cacheControl: "3600",
+                    contentType: "image/jpeg",
+                    upsert: false
+                )
+        )
+    
+    let publicURL = try client.storage
+        .from("zorion_bucket")
+        .getPublicURL(path: "chatImage/\(roomId)/\(userId)/\(fileName)")
+            
+    return publicURL.absoluteString
+}

@@ -14,6 +14,7 @@ struct DiscoverView: View {
     @State private var alertTitle: String = ""
     @State private var alertMessage: String = ""
     @State private var rooms: [RoomModel] = []
+    @EnvironmentObject var tabBarManager: TabBarManager
     
     func fetchData() async {
         isLoading = true
@@ -91,6 +92,9 @@ struct DiscoverView: View {
                     .onTapGesture {
                         hideKeyboard()
                     }
+                    .onAppear {
+                        tabBarManager.isVisible = true
+                    }
                 }
             }
         }
@@ -107,4 +111,5 @@ struct DiscoverView: View {
 
 #Preview {
     DiscoverView()
+        .environmentObject(TabBarManager())
 }

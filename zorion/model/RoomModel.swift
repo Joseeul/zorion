@@ -65,3 +65,11 @@ struct AllRoomMember: Codable {
     let room_id: UUID
     let user: UserModel
 }
+
+// untuk insert message
+struct InsertMessage: Codable {
+    let user_id: UUID
+    let room_id: UUID
+    let message_image: String?
+    let message: String
+}
