@@ -194,7 +194,7 @@ func fetchAllRoomMember(roomId: UUID) async throws -> [UserModel] {
 }
 
 // insert chat kedalam tabel
-func insertChat(roomId: UUID, message: String, messageImage: UIImage? = nil) async throws {
+func insertChat(roomId: UUID, message: String, messageImage: UIImage?) async throws {
     let userId: UUID = try await client.auth.user().id
     var imageLink: String = ""
     
@@ -232,4 +232,16 @@ func insertChatImage(image: UIImage, roomId: UUID) async throws -> String {
         .getPublicURL(path: "chatImage/\(roomId)/\(userId)/\(fileName)")
             
     return publicURL.absoluteString
+}
+
+// untuk fetch data message
+func fetchMessage(roomId: UUID) async throws -> [MessageModel] {
+    let result: [MessageModel] = try await client
+        .from("messages")
+        .select("*, user(*), room(*)")
+        .eq("room_id", value: roomId)
+        .execute()
+        .value
+    
+    return result
 }

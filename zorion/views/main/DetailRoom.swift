@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct DetailRoom: View {
     @State private var isJoin: Bool = false
@@ -175,7 +176,7 @@ struct DetailRoom: View {
                     .padding(.top, 8)
                     .buttonStyle(.plain)
                     
-                    NavigationLink(destination: ChatView()) {
+                    NavigationLink(destination: ChatView(roomId: roomId)) {
                         HStack {
                             Text("Chats")
                             
@@ -193,7 +194,7 @@ struct DetailRoom: View {
                     .padding(.top, 8)
                     .buttonStyle(.plain)
                     
-                    NavigationLink(destination: ChatView()) {
+                    NavigationLink(destination: ChatView(roomId: roomId)) {
                         HStack {
                             Text("Voice & video")
                             
