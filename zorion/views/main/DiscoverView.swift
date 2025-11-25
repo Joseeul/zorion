@@ -59,7 +59,6 @@ struct DiscoverView: View {
                                     .resizable()
                                     .aspectRatio(contentMode: .fill)
                                     .frame(width: 16, height: 16)
-                                    .clipShape(.circle)
                                     .foregroundColor(.white)
                                     .fontWeight(.semibold)
                             })
