@@ -105,7 +105,9 @@ struct InsertChoiceModel: Codable {
 }
 
 // model untuk fetch data vote
-struct VoteModel: Codable {
+struct VoteModel: Codable, Identifiable {
+    var id: UUID { vote_id }
+    
     let vote_id: UUID
     let created_at: Date
     let room_id: UUID
@@ -114,9 +116,16 @@ struct VoteModel: Codable {
 }
 
 // model untuk join vote dan choice
-struct VoteChoiceModel: Codable {
+struct VoteChoiceModel: Codable, Identifiable {
+    var id: UUID { choice_id }
+    
     let choice_id: UUID
     let created_at: Date
     let vote_id: UUID
     let choice: String
+}
+
+// untuk ambil vote_id
+struct InsertResponse: Codable {
+    let vote_id: UUID
 }

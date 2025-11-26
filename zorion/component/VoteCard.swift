@@ -9,8 +9,7 @@ import SwiftUI
 
 struct VoteCard: View {
     let question: String
-    let choiceOptionCount: Int
-    let choice: String
+    let choices: [VoteChoiceModel]
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -19,10 +18,10 @@ struct VoteCard: View {
                 .fontWeight(.semibold)
                 .padding(.bottom, 4)
             
-            ForEach(0..<choiceOptionCount, id: \.self) { index in
+            ForEach(choices) { option in
                 Button(action: {}, label: {
                     HStack {
-                        Text(choice)
+                        Text(option.choice)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         
                         Text("54")
@@ -49,8 +48,4 @@ struct VoteCard: View {
         .background(Color(uiColor: .systemGray6))
         .cornerRadius(8)
     }
-}
-
-#Preview {
-    VoteCard(question: "Demo Question", choiceOptionCount: 2, choice: "Vote choice option")
 }

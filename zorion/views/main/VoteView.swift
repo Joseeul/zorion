@@ -34,6 +34,8 @@ struct VoteView: View {
         do {
             try await insertVote(roomId: roomId, question: inputedQuestion, choices: options)
             
+            await fetchVoteData()
+            
             inputedQuestion = ""
             showCreateVote = false
         } catch {
@@ -74,9 +76,12 @@ struct VoteView: View {
                         .padding(.bottom, 8)
                     
                     ScrollView {
-                        ForEach(0..<voteData.count, id: \.self) { index in
-                            VoteCard(question: voteData[index].question, choiceOptionCount: voteData[index].vote_choices.count, choice: voteData[index].vote_choices[index].choice)
-                                .padding(.bottom, 8)
+                        ForEach(voteData) { vote in
+                            VoteCard(
+                                question: vote.question,
+                                choices: vote.vote_choices
+                            )
+                            .padding(.bottom, 8)
                         }
                     }
                     

@@ -257,10 +257,10 @@ func fetchSingleMessage(messageId: Int) async throws -> MessageModel? {
 func insertVote(roomId: UUID, question: String, choices: [VoteOption]) async throws {
     let data = InsertVoteModel(room_id: roomId, question: question)
     
-    let result: VoteModel = try await client
+    let result: InsertResponse = try await client
         .from("vote")
         .insert(data)
-        .select("*")
+        .select("vote_id")
         .single()
         .execute()
         .value
@@ -286,6 +286,7 @@ func fetchVote(roomId: UUID) async throws -> [VoteModel] {
         .from("vote")
         .select("*, vote_choices(*)")
         .eq("room_id", value: roomId)
+        .order("created_at", ascending: false)
         .execute()
         .value
     
