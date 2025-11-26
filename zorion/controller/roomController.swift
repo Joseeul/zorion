@@ -225,7 +225,7 @@ func insertChatImage(image: UIImage, roomId: UUID) async throws -> String {
     let publicURL = try client.storage
         .from("zorion_bucket")
         .getPublicURL(path: "chatImage/\(roomId)/\(userId)/\(fileName)")
-            
+    
     return publicURL.absoluteString
 }
 
@@ -252,3 +252,44 @@ func fetchSingleMessage(messageId: Int) async throws -> MessageModel? {
     
     return result.first
 }
+
+// untuk insert vote kedalam tabel
+func insertVote(roomId: UUID, question: String, choices: [VoteOption]) async throws {
+    let data = InsertVoteModel(room_id: roomId, question: question)
+    
+    let result: VoteModel = try await client
+        .from("vote")
+        .insert(data)
+        .select("*")
+        .single()
+        .execute()
+        .value
+    
+    let voteId = result.vote_id
+    
+    let choicesData = choices.map { option in
+        InsertChoiceModel(
+            vote_id: voteId,
+            choice: option.text
+        )
+    }
+    
+    try await client
+        .from("vote_choices")
+        .insert(choicesData)
+        .execute()
+}
+
+// untuk fetch vote
+func fetchVote(roomId: UUID) async throws -> [VoteModel] {
+    let result: [VoteModel] = try await client
+        .from("vote")
+        .select("*, vote_choices(*)")
+        .eq("room_id", value: roomId)
+        .execute()
+        .value
+    
+    return result
+}
+
+

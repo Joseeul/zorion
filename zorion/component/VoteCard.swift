@@ -8,19 +8,21 @@
 import SwiftUI
 
 struct VoteCard: View {
-    //    let question: String
+    let question: String
+    let choiceOptionCount: Int
+    let choice: String
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text("Vote Title")
+            Text(question)
                 .font(.title2)
                 .fontWeight(.semibold)
                 .padding(.bottom, 4)
             
-            ForEach(0..<3) { index in
+            ForEach(0..<choiceOptionCount, id: \.self) { index in
                 Button(action: {}, label: {
                     HStack {
-                        Text("Vote Title")
+                        Text(choice)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         
                         Text("54")
@@ -50,5 +52,5 @@ struct VoteCard: View {
 }
 
 #Preview {
-    VoteCard()
+    VoteCard(question: "Demo Question", choiceOptionCount: 2, choice: "Vote choice option")
 }

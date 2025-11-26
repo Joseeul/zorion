@@ -8,9 +8,14 @@
 import SwiftUI
 
 struct VoteView: View {
+    @State var roomId: UUID
     @State private var inputedQuestion: String = ""
     @State private var isLoading: Bool = false
     @State private var showCreateVote: Bool = false
+    @State private var isShowingAlert: Bool = false
+    @State private var alertTitle: String = ""
+    @State private var alertMessage: String = ""
+    @State private var voteData: [VoteModel] = []
     @EnvironmentObject var tabBarManager: TabBarManager
     @State private var options: [VoteOption] = [
         VoteOption(),
@@ -23,6 +28,36 @@ struct VoteView: View {
     
     func deleteOption(id: UUID) {
         options.removeAll { $0.id == id }
+    }
+    
+    func handleInsertVote() async {
+        do {
+            try await insertVote(roomId: roomId, question: inputedQuestion, choices: options)
+            
+            inputedQuestion = ""
+            showCreateVote = false
+        } catch {
+            self.alertTitle = "Oops.. There Is An Error"
+            self.alertMessage = "\(error.localizedDescription)"
+            self.isShowingAlert = true
+            return
+        }
+    }
+    
+    func fetchVoteData() async {
+        isLoading = true
+        
+        do {
+            voteData = try await fetchVote(roomId: roomId)
+        } catch {
+            isLoading = false
+            self.alertTitle = "Oops.. There Is An Error"
+            self.alertMessage = "\(error.localizedDescription)"
+            self.isShowingAlert = true
+            return
+        }
+        
+        isLoading = false
     }
     
     var body: some View {
@@ -39,8 +74,8 @@ struct VoteView: View {
                         .padding(.bottom, 8)
                     
                     ScrollView {
-                        ForEach(0..<10) { index in
-                            VoteCard()
+                        ForEach(0..<voteData.count, id: \.self) { index in
+                            VoteCard(question: voteData[index].question, choiceOptionCount: voteData[index].vote_choices.count, choice: voteData[index].vote_choices[index].choice)
                                 .padding(.bottom, 8)
                         }
                     }
@@ -150,7 +185,11 @@ struct VoteView: View {
                 )
                 .padding(.bottom, 8)
                 
-                Button(action: {}, label: {
+                Button(action: {
+                    Task {
+                        await handleInsertVote()
+                    }
+                }, label: {
                     Text("Submit")
                         .frame(maxWidth: .infinity)
                 })
@@ -169,13 +208,25 @@ struct VoteView: View {
             .presentationDetents([.medium])
             .presentationDragIndicator(.visible)
         }
+        .alert(alertTitle, isPresented: $isShowingAlert, presenting: alertMessage) {
+            message in Button("OK", role: .cancel) {}
+        } message: {
+            message in Text(message)
+        }
         .onAppear {
             tabBarManager.isVisible = false
+        }
+        .task {
+            if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
+                return
+            }
+            
+            await fetchVoteData()
         }
     }
 }
 
 #Preview {
-    VoteView()
+    VoteView(roomId: UUID())
         .environmentObject(TabBarManager())
 }
