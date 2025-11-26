@@ -85,3 +85,9 @@ struct MessageModel: Codable {
     let user: UserModel
     let room: RoomModel
 }
+
+// model untuk vote choice/option
+struct VoteOption: Identifiable {
+    var id = UUID()
+    var text: String = ""
+}
