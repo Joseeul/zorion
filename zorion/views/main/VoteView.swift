@@ -10,8 +10,6 @@ import SwiftUI
 struct VoteView: View {
     @State private var inputedQuestion: String = ""
     @State private var isLoading: Bool = false
-    @State private var startColor: Color = .random
-    @State private var endColor: Color = .random
     @State private var showCreateVote: Bool = false
     @EnvironmentObject var tabBarManager: TabBarManager
     @State private var options: [VoteOption] = [
@@ -41,25 +39,10 @@ struct VoteView: View {
                         .padding(.bottom, 8)
                     
                     ScrollView {
-                        VStack(alignment: .leading) {
-                            Text("Vote Title")
-                                .font(.title2)
-                                .fontWeight(.semibold)
-                                .padding(.bottom, 4)
-                                .shadow(radius: 3)
+                        ForEach(0..<10) { index in
+                            VoteCard()
+                                .padding(.bottom, 8)
                         }
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(
-                            LinearGradient(
-                                gradient: Gradient(colors: [startColor, endColor]),
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .cornerRadius(8)
-                        .foregroundColor(.white)
-                        .shadow(radius: 5)
                     }
                     
                     Spacer()
@@ -182,22 +165,13 @@ struct VoteView: View {
                 Spacer()
             }
             .padding()
+            .background(.white)
             .presentationDetents([.medium])
             .presentationDragIndicator(.visible)
         }
         .onAppear {
             tabBarManager.isVisible = false
         }
-    }
-}
-
-extension Color {
-    static var random: Color {
-        return Color(
-            hue: .random(in: 0...1),
-            saturation: .random(in: 0.6...1),
-            brightness: .random(in: 0.5...0.8)
-        )
     }
 }
 
