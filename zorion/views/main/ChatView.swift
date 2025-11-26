@@ -24,12 +24,19 @@ struct ChatView: View {
     private let client = SupabaseManager.shared.client
     
     func handleChat() async {
+        var resultLink: String = ""
+        
         do {
-            try await insertChat(roomId: roomId, message: messageContent, messageImage: selectedImage)
+            if selectedImage != nil {
+                resultLink = try await insertChatImage(image: selectedImage!, roomId: roomId)
+            }
+            
+            try await insertChat(roomId: roomId, message: messageContent, messageImage: resultLink)
             
             messageContent = ""
             selectedImage = nil
             selectedItem = nil
+            resultLink = ""
         } catch {
             self.alertTitle = "Oops.. There Is An Error"
             self.alertMessage = "\(error.localizedDescription)"
@@ -69,13 +76,13 @@ struct ChatView: View {
     }
     
     func setupRealtimeChat() async {
-        var channel = client.channel("room:\(roomId)")
+        let channel = client.channel("room:\(roomId)")
         
         let changeStream = channel.postgresChange(
             AnyAction.self,
             schema: "public",
             table: "messages",
-            filter: "room_id=eq.\(roomId)"
+            filter: .eq("room_id", value: roomId.uuidString)
         )
         
         await channel.subscribe()
@@ -106,7 +113,7 @@ struct ChatView: View {
     }
     
     func unsubsRealtimeChat() async {
-        var channel = client.channel("room:\(roomId)")
+        let channel = client.channel("room:\(roomId)")
         
         await channel.unsubscribe()
     }

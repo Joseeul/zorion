@@ -194,15 +194,10 @@ func fetchAllRoomMember(roomId: UUID) async throws -> [UserModel] {
 }
 
 // insert chat kedalam tabel
-func insertChat(roomId: UUID, message: String, messageImage: UIImage?) async throws {
+func insertChat(roomId: UUID, message: String, messageImage: String? = nil) async throws {
     let userId: UUID = try await client.auth.user().id
-    var imageLink: String = ""
     
-    if messageImage != nil {
-        imageLink = try await insertChatImage(image: messageImage!, roomId: roomId)
-    }
-    
-    let data = InsertMessage(user_id: userId, room_id: roomId, message_image: imageLink, message: message)
+    let data = InsertMessage(user_id: userId, room_id: roomId, message_image: messageImage, message: message)
     
     try await client
         .from("messages")
