@@ -85,7 +85,14 @@ struct ChatView: View {
             filter: .eq("room_id", value: roomId.uuidString)
         )
         
-        await channel.subscribe()
+        do {
+            try await channel.subscribeWithError()
+        } catch {
+            self.alertTitle = "Oops.. There Is An Error"
+            self.alertMessage = "\(error.localizedDescription)"
+            self.isShowingAlert = true
+            return
+        }
         
         for await change in changeStream {
             switch change {
