@@ -11,20 +11,15 @@ import UIKit
 
 private let client = SupabaseManager.shared.client
 
-// add user kedalam tabel user
+// add room kedalam tabel room
 func addRoomData(roomName: String, roomDesc: String) async throws {
     let roomOwner = try await client.auth.user().id
     let room = InsertRoom(room_owner: roomOwner, room_name: roomName, room_desc: roomDesc)
     
-    do {
-        try await client
-            .from("room")
-            .insert(room)
-            .execute()
-    } catch {
-        print("❌ Uploading profile picture failed: \(error.localizedDescription)")
-        return
-    }
+    try await client
+        .from("room")
+        .insert(room)
+        .execute()
 }
 
 // upload room picture user kedalam bucket
@@ -70,8 +65,8 @@ func uploadRoomPicture() async throws {
     }
 }
 
-// insert profile picture ke table user
-func insertRoomPicture() async throws  {
+// insert room picture ke table room
+func insertRoomPicture() async throws {
     let roomPicture: String = UserDefaults.standard.string(forKey: "userRoomPicture")!
     let userId: String = UserDefaults.standard.string(forKey: "userId")!
     
@@ -84,27 +79,23 @@ func insertRoomPicture() async throws  {
     
     let roomId = roomData[0].room_id
     
-    do {
-        let publicUrl = try client.storage
-            .from("zorion_bucket")
-            .getPublicURL(path: "roomPicture/\(roomId)/\(roomPicture)")
-        
-        try await client
-            .from("room")
-            .update(["room_picture": publicUrl])
-            .eq("room_id", value: roomId)
-            .execute()
-        
-        print("✅ Updating room picture success")
-    } catch {
-        print("❌ Updating room picture failed: \(error.localizedDescription)")
-        return
-    }
+    // nebeng untuk insert room member pas creator buat room
+    try await insertRoomMember(roomId: roomId)
+    
+    let publicUrl = try client.storage
+        .from("zorion_bucket")
+        .getPublicURL(path: "roomPicture/\(roomId)/\(roomPicture)")
+    
+    try await client
+        .from("room")
+        .update(["room_picture": publicUrl])
+        .eq("room_id", value: roomId)
+        .execute()
 }
 
 // fetch creator room data
 func fetchCreatorRoom() async throws -> RoomModel {
-    let userId: String = UserDefaults.standard.string(forKey: "userId") ?? "41485a82-94ce-4050-b60a-8d738fb72a0d"
+    let userId: String = UserDefaults.standard.string(forKey: "userId") ?? ""
     let userUUID = UUID(uuidString: userId)
     
     let result: RoomModel = try await client
@@ -116,4 +107,148 @@ func fetchCreatorRoom() async throws -> RoomModel {
         .value
     
     return result
+}
+
+// fetch semua room yang ada
+func fetchAllRoom() async throws -> [RoomModel] {
+    let result: [RoomModel] = try await client
+        .from("room")
+        .select()
+        .execute()
+        .value
+    
+    return result
+}
+
+// fetch detail room data
+func fetchRoomDetail(roomId: UUID) async throws -> RoomModel {
+    let result: RoomModel = try await client
+        .from("room")
+        .select()
+        .eq("room_id", value: roomId)
+        .single()
+        .execute()
+        .value
+    
+    return result
+}
+
+// insert room member
+func insertRoomMember(roomId: UUID) async throws {
+    let userId: UUID = try await client.auth.user().id
+    let data = InsertRoomMember(user_id: userId, room_id: roomId)
+    
+    try await client
+        .from("room_members")
+        .insert(data)
+        .execute()
+}
+
+// fetch community room user yang sudah join
+func fetchUserCommunityRoom() async throws -> [RoomModel] {
+    let userId: UUID = try await client.auth.user().id
+    
+    let data: [CommunityRoomUser] = try await client
+        .from("room_members")
+        .select("*, room(*)")
+        .eq("user_id", value: userId)
+        .execute()
+        .value
+    
+    let rooms = data.map { $0.room }
+    
+    return rooms
+}
+
+// cek apakah user sudah join di room atau belum
+func userJoinRoom(roomId: UUID) async throws -> Bool {
+    let userId: UUID = try await client.auth.user().id
+    
+    let result: [RoomMember] = try await client
+        .from("room_members")
+        .select("*")
+        .eq("room_id", value: roomId)
+        .eq("user_id", value: userId)
+        .execute()
+        .value
+    
+    if result.isEmpty {
+        return false
+    } else {
+        return true
+    }
+}
+
+// fetch semua room member
+func fetchAllRoomMember(roomId: UUID) async throws -> [UserModel] {
+    let result: [AllRoomMember] = try await client
+        .from("room_members")
+        .select("*, user(*)")
+        .eq("room_id", value: roomId)
+        .execute()
+        .value
+    
+    let users = result.map { $0.user }
+    
+    return users
+}
+
+// insert chat kedalam tabel
+func insertChat(roomId: UUID, message: String, messageImage: String? = nil) async throws {
+    let userId: UUID = try await client.auth.user().id
+    
+    let data = InsertMessage(user_id: userId, room_id: roomId, message_image: messageImage, message: message)
+    
+    try await client
+        .from("messages")
+        .insert(data)
+        .execute()
+}
+
+// insert gambar chat kedalam bucket storage
+func insertChatImage(image: UIImage, roomId: UUID) async throws -> String {
+    let userId: UUID = try await client.auth.user().id
+    let imageData = image.jpegData(compressionQuality: 0.5)!
+    let fileName = "\(Int(Date().timeIntervalSince1970))"
+    
+    try await client.storage
+        .from("zorion_bucket")
+        .upload("chatImage/\(roomId)/\(userId)/\(fileName)",
+                data: imageData,
+                options: FileOptions(
+                    cacheControl: "3600",
+                    contentType: "image/jpeg",
+                    upsert: false
+                )
+        )
+    
+    let publicURL = try client.storage
+        .from("zorion_bucket")
+        .getPublicURL(path: "chatImage/\(roomId)/\(userId)/\(fileName)")
+            
+    return publicURL.absoluteString
+}
+
+// untuk fetch data message
+func fetchMessage(roomId: UUID) async throws -> [MessageModel] {
+    let result: [MessageModel] = try await client
+        .from("messages")
+        .select("*, user(*), room(*)")
+        .eq("room_id", value: roomId)
+        .execute()
+        .value
+    
+    return result
+}
+
+// untuk fetch realtime data
+func fetchSingleMessage(messageId: Int) async throws -> MessageModel? {
+    let result: [MessageModel] = try await client
+        .from("messages")
+        .select("*, user(*), room(*)")
+        .eq("id", value: messageId)
+        .execute()
+        .value
+    
+    return result.first
 }

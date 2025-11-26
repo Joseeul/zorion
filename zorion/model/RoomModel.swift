@@ -33,3 +33,55 @@ struct RoomModel: Codable {
     let room_picture: String
     let created_at: Date
 }
+
+// untuk fetch room member
+struct RoomMember: Codable {
+    let id: Int
+    let created_at: Date
+    let user_id: UUID
+    let room_id: UUID
+}
+
+// untuk insert room member
+struct InsertRoomMember: Codable {
+    let user_id: UUID
+    let room_id: UUID
+}
+
+// untuk response community room user yang sudah join
+struct CommunityRoomUser: Codable {
+    let id: Int
+    let user_id: UUID
+    let room_id: UUID
+    let created_at: Date
+    let room: RoomModel
+}
+
+// untuk response fetch semua room member
+struct AllRoomMember: Codable {
+    let id: Int
+    let created_at: Date
+    let user_id: UUID
+    let room_id: UUID
+    let user: UserModel
+}
+
+// untuk insert message
+struct InsertMessage: Codable {
+    let user_id: UUID
+    let room_id: UUID
+    let message_image: String?
+    let message: String
+}
+
+// model untuk message
+struct MessageModel: Codable {
+    let id: Int
+    let created_at: Date
+    let user_id: UUID
+    let room_id: UUID
+    let message_image: String?
+    let message: String
+    let user: UserModel
+    let room: RoomModel
+}
