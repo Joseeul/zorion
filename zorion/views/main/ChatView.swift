@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Supabase
 import PhotosUI
 
 struct ChatView: View {
@@ -19,6 +20,8 @@ struct ChatView: View {
     @State private var selectedItem: PhotosPickerItem? = nil
     @State private var selectedImage: UIImage? = nil
     @EnvironmentObject var tabBarManager: TabBarManager
+    
+    private let client = SupabaseManager.shared.client
     
     func handleChat() async {
         do {
@@ -65,6 +68,52 @@ struct ChatView: View {
         return result
     }
     
+    func setupRealtimeChat() async {
+        // 1. Buat channel spesifik untuk Room ini
+        // Kita gunakan filter agar tidak mendengarkan pesan dari room lain
+        let channel = client.channel("room:\(roomId)")
+        
+        let changeStream = channel.postgresChange(
+            AnyAction.self, // Kita hanya peduli jika ada pesan BARU (.insert)
+            schema: "public",
+            table: "messages",
+            filter: "room_id=eq.\(roomId)" // Filter hanya untuk Room ID ini
+        )
+        
+        await channel.subscribe()
+        
+        // 2. Listen loop
+        for await change in changeStream {
+            switch change {
+            case .insert(let action):
+                // Masalah: action.record tidak punya data "user" (relasi).
+                // Solusi: Ambil ID-nya, lalu fetch manual data lengkapnya.
+                
+                // Asumsi 'id' di database adalah Int (sesuai MessageModel anda)
+                if let messageId = action.record["id"]?.intValue {
+                    do {
+                        // Fetch data lengkap (termasuk foto user, username, dll)
+                        if let newMessage = try await fetchSingleMessage(messageId: messageId) {
+                            
+                            // Cek agar tidak duplikat (opsional tapi disarankan)
+                            if !chatData.contains(where: { $0.id == newMessage.id }) {
+                                await MainActor.run {
+                                    withAnimation {
+                                        chatData.append(newMessage)
+                                    }
+                                }
+                            }
+                        }
+                    } catch {
+                        print("Error fetching realtime message details: \(error)")
+                    }
+                }
+                
+            default: break
+            }
+        }
+    }
+    
     var body: some View {
         VStack(alignment: .leading) {
             if isLoading {
@@ -78,46 +127,55 @@ struct ChatView: View {
                 Divider()
                     .padding(.horizontal)
                 
-                ScrollView {
-                    ForEach(0..<chatData.count, id: \.self) { index in
-                        HStack(alignment: .bottom) {
-                            AsyncImage(url: chatData[index].user.profile_picture) { image in
-                                image
-                                    .resizable()
-                                    .scaledToFit()
-                                    .clipShape(.circle)
-                                    .frame(width: 42)
-                            } placeholder: {
-                                Color.gray.opacity(0.3)
-                                    .frame(width: 42, height: 42)
-                                    .overlay(
-                                        ProgressView()
-                                            .tint(.gray)
-                                    )
-                                    .clipShape(.circle)
-                            }
-                            
-                            VStack(alignment: .leading) {
-                                HStack {
-                                    Text(chatData[index].user.username)
-                                        .fontWeight(.semibold)
-                                    
-                                    Text("at \(dateFormatter(date: chatData[index].created_at))")
-                                        .font(.caption)
-                                        .foregroundStyle(.zorionGray)
-                                        .fontWeight(.light)
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        ForEach(0..<chatData.count, id: \.self) { index in
+                            HStack(alignment: .bottom) {
+                                AsyncImage(url: chatData[index].user.profile_picture) { image in
+                                    image
+                                        .resizable()
+                                        .scaledToFit()
+                                        .clipShape(.circle)
+                                        .frame(width: 42)
+                                } placeholder: {
+                                    Color.gray.opacity(0.3)
+                                        .frame(width: 42, height: 42)
+                                        .overlay(
+                                            ProgressView()
+                                                .tint(.gray)
+                                        )
+                                        .clipShape(.circle)
                                 }
                                 
-                                Text(chatData[index].message)
-                                    .font(.subheadline)
+                                VStack(alignment: .leading) {
+                                    HStack {
+                                        Text(chatData[index].user.username)
+                                            .fontWeight(.semibold)
+                                        
+                                        Text("at \(dateFormatter(date: chatData[index].created_at))")
+                                            .font(.caption)
+                                            .foregroundStyle(.zorionGray)
+                                            .fontWeight(.light)
+                                    }
+                                    
+                                    Text(chatData[index].message)
+                                        .font(.subheadline)
+                                }
+                            }
+                            .padding(.vertical, 8)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                    }
+                    .onChange(of: chatData.count) {
+                        if let lastId = chatData.last?.id {
+                            withAnimation {
+                                proxy.scrollTo(lastId, anchor: .bottom)
                             }
                         }
-                        .padding(.vertical, 8)
-                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
+                    .defaultScrollAnchor(.bottom)
+                    .padding(.horizontal)
                 }
-                .defaultScrollAnchor(.bottom)
-                .padding(.horizontal)
                 
                 Spacer()
                 
@@ -222,6 +280,7 @@ struct ChatView: View {
             }
             
             await fetchChat()
+            await setupRealtimeChat()
         }
     }
 }

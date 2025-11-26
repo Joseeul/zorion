@@ -245,3 +245,15 @@ func fetchMessage(roomId: UUID) async throws -> [MessageModel] {
     
     return result
 }
+
+// untuk fetch realtime data
+func fetchSingleMessage(messageId: Int) async throws -> MessageModel? {
+    let result: [MessageModel] = try await client
+        .from("messages")
+        .select("*, user(*), room(*)")
+        .eq("id", value: messageId)
+        .execute()
+        .value
+    
+    return result.first
+}
