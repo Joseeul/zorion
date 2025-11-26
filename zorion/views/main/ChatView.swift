@@ -69,33 +69,24 @@ struct ChatView: View {
     }
     
     func setupRealtimeChat() async {
-        // 1. Buat channel spesifik untuk Room ini
-        // Kita gunakan filter agar tidak mendengarkan pesan dari room lain
-        let channel = client.channel("room:\(roomId)")
+        var channel = client.channel("room:\(roomId)")
         
         let changeStream = channel.postgresChange(
-            AnyAction.self, // Kita hanya peduli jika ada pesan BARU (.insert)
+            AnyAction.self,
             schema: "public",
             table: "messages",
-            filter: "room_id=eq.\(roomId)" // Filter hanya untuk Room ID ini
+            filter: "room_id=eq.\(roomId)"
         )
         
         await channel.subscribe()
         
-        // 2. Listen loop
         for await change in changeStream {
             switch change {
             case .insert(let action):
-                // Masalah: action.record tidak punya data "user" (relasi).
-                // Solusi: Ambil ID-nya, lalu fetch manual data lengkapnya.
-                
-                // Asumsi 'id' di database adalah Int (sesuai MessageModel anda)
                 if let messageId = action.record["id"]?.intValue {
                     do {
-                        // Fetch data lengkap (termasuk foto user, username, dll)
                         if let newMessage = try await fetchSingleMessage(messageId: messageId) {
                             
-                            // Cek agar tidak duplikat (opsional tapi disarankan)
                             if !chatData.contains(where: { $0.id == newMessage.id }) {
                                 await MainActor.run {
                                     withAnimation {
@@ -114,6 +105,12 @@ struct ChatView: View {
         }
     }
     
+    func unsubsRealtimeChat() async {
+        var channel = client.channel("room:\(roomId)")
+        
+        await channel.unsubscribe()
+    }
+    
     var body: some View {
         VStack(alignment: .leading) {
             if isLoading {
@@ -130,7 +127,7 @@ struct ChatView: View {
                 ScrollViewReader { proxy in
                     ScrollView {
                         ForEach(0..<chatData.count, id: \.self) { index in
-                            HStack(alignment: .bottom) {
+                            HStack(alignment: .top) {
                                 AsyncImage(url: chatData[index].user.profile_picture) { image in
                                     image
                                         .resizable()
@@ -156,6 +153,43 @@ struct ChatView: View {
                                             .font(.caption)
                                             .foregroundStyle(.zorionGray)
                                             .fontWeight(.light)
+                                    }
+                                    
+                                    if let imageString = chatData[index].message_image,
+                                       let url = URL(string: imageString) {
+                                        
+                                        AsyncImage(url: url) { phase in
+                                            switch phase {
+                                            case .empty:
+                                                ProgressView()
+                                                    .frame(height: 200)
+                                                    .frame(maxWidth: .infinity)
+                                                    .background(Color.gray.opacity(0.1))
+                                                    .cornerRadius(12)
+                                                
+                                            case .success(let image):
+                                                image
+                                                    .resizable()
+                                                    .scaledToFit()
+                                                    .frame(maxHeight: 300)
+                                                    .cornerRadius(12)
+                                                    .padding(.top, 4)
+                                                
+                                            case .failure:
+                                                Image(systemName: "photo.badge.exclamationmark")
+                                                    .resizable()
+                                                    .scaledToFit()
+                                                    .frame(height: 50)
+                                                    .foregroundColor(.gray)
+                                                    .frame(maxWidth: .infinity)
+                                                    .padding()
+                                                    .background(Color.gray.opacity(0.1))
+                                                    .cornerRadius(12)
+                                                
+                                            @unknown default:
+                                                EmptyView()
+                                            }
+                                        }
                                     }
                                     
                                     Text(chatData[index].message)
@@ -273,6 +307,11 @@ struct ChatView: View {
         }
         .onAppear {
             tabBarManager.isVisible = false
+        }
+        .onDisappear {
+            Task {
+                await unsubsRealtimeChat()
+            }
         }
         .task {
             if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {

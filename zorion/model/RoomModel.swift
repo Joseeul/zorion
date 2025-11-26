@@ -80,7 +80,7 @@ struct MessageModel: Codable {
     let created_at: Date
     let user_id: UUID
     let room_id: UUID
-    let message_image: String
+    let message_image: String?
     let message: String
     let user: UserModel
     let room: RoomModel
