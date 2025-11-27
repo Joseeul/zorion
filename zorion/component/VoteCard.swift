@@ -8,8 +8,28 @@
 import SwiftUI
 
 struct VoteCard: View {
+    let voteId: UUID
     let question: String
     let choices: [VoteChoiceModel]
+    var onVoteSuccess: () async -> Void
+    @State private var isShowingAlert: Bool = false
+    @State private var alertTitle: String = ""
+    @State private var alertMessage: String = ""
+    
+    func handleVote(voteId: UUID, choiceId: UUID) async {
+        do {
+            try await inputVote(voteId: voteId, choiceId: choiceId)
+            
+            self.alertTitle = "Vote Successfully"
+            self.alertMessage = "Your vote has been successfully submitted. Thank you!"
+            self.isShowingAlert = true
+        } catch {
+            self.alertTitle = "Oops.. There Is An Error"
+            self.alertMessage = "\(error.localizedDescription)"
+            self.isShowingAlert = true
+            return
+        }
+    }
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -19,12 +39,16 @@ struct VoteCard: View {
                 .padding(.bottom, 4)
             
             ForEach(choices) { option in
-                Button(action: {}, label: {
+                Button(action: {
+                    Task {
+                        await handleVote(voteId: option.vote_id, choiceId: option.choice_id)
+                    }
+                }, label: {
                     HStack {
                         Text(option.choice)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         
-                        Text("54")
+                        Text("\(option.totalVotes)")
                             .font(
                                 .system(
                                     .body,
@@ -47,5 +71,14 @@ struct VoteCard: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color(uiColor: .systemGray6))
         .cornerRadius(8)
+        .alert(alertTitle, isPresented: $isShowingAlert, presenting: alertMessage) {
+            message in Button("OK", role: .cancel) {
+                Task {
+                    await onVoteSuccess()
+                }
+            }
+        } message: {
+            message in Text(message)
+        }
     }
 }

@@ -123,9 +123,26 @@ struct VoteChoiceModel: Codable, Identifiable {
     let created_at: Date
     let vote_id: UUID
     let choice: String
+    
+    private let vote_results: [VoteCountResult]?
+    
+    struct VoteCountResult: Codable {
+        let count: Int
+    }
+    
+    var totalVotes: Int {
+        return vote_results?.first?.count ?? 0
+    }
 }
 
 // untuk ambil vote_id
 struct InsertResponse: Codable {
     let vote_id: UUID
+}
+
+// untuk input vote
+struct InputVoteModel: Codable {
+    let vote_id: UUID
+    let choice_id: UUID
+    let user_id: UUID
 }

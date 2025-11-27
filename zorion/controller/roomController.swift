@@ -284,7 +284,7 @@ func insertVote(roomId: UUID, question: String, choices: [VoteOption]) async thr
 func fetchVote(roomId: UUID) async throws -> [VoteModel] {
     let result: [VoteModel] = try await client
         .from("vote")
-        .select("*, vote_choices(*)")
+        .select("*, vote_choices(*, vote_results(count))")
         .eq("room_id", value: roomId)
         .order("created_at", ascending: false)
         .execute()
@@ -293,4 +293,13 @@ func fetchVote(roomId: UUID) async throws -> [VoteModel] {
     return result
 }
 
-
+// untuk vote nya
+func inputVote(voteId: UUID, choiceId: UUID) async throws {
+    let userId: UUID = try await client.auth.user().id
+    let data = InputVoteModel(vote_id: voteId, choice_id: choiceId, user_id: userId)
+    
+    try await client
+        .from("vote_results")
+        .insert(data)
+        .execute()
+}

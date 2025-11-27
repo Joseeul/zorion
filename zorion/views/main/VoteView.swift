@@ -78,8 +78,12 @@ struct VoteView: View {
                     ScrollView {
                         ForEach(voteData) { vote in
                             VoteCard(
+                                voteId: vote.vote_id,
                                 question: vote.question,
-                                choices: vote.vote_choices
+                                choices: vote.vote_choices,
+                                onVoteSuccess: {
+                                    await fetchVoteData()
+                                }
                             )
                             .padding(.bottom, 8)
                         }
