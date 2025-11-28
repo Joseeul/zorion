@@ -15,6 +15,8 @@ struct VoteView: View {
     @State private var isShowingAlert: Bool = false
     @State private var alertTitle: String = ""
     @State private var alertMessage: String = ""
+    @State private var contentCreator: Bool = UserDefaults.standard.bool(forKey: "isContentCreator")
+    @State private var showVoteButton: Bool = false
     @State private var voteData: [VoteModel] = []
     @EnvironmentObject var tabBarManager: TabBarManager
     @State private var options: [VoteOption] = [
@@ -62,6 +64,22 @@ struct VoteView: View {
         isLoading = false
     }
     
+    func checkCreatorVote() async {
+        isLoading = true
+        
+        do {
+            showVoteButton = try await checkIsCreatorRoom(roomId: roomId)
+        } catch {
+            isLoading = false
+            self.alertTitle = "Oops.. There Is An Error"
+            self.alertMessage = "\(error.localizedDescription)"
+            self.isShowingAlert = true
+            return
+        }
+        
+        isLoading = false
+    }
+    
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack(alignment: .leading) {
@@ -93,7 +111,7 @@ struct VoteView: View {
                 }
             }
             
-            if !isLoading {
+            if !isLoading && showVoteButton {
                 Button(action: {
                     showCreateVote = true
                 }) {
@@ -231,6 +249,10 @@ struct VoteView: View {
             }
             
             await fetchVoteData()
+            
+            if contentCreator {
+                await checkCreatorVote()
+            }
         }
     }
 }

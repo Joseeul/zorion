@@ -12,6 +12,7 @@ struct VoteCard: View {
     let question: String
     let choices: [VoteChoiceModel]
     var onVoteSuccess: () async -> Void
+    @State private var userVotedChoiceId: UUID? = nil
     @State private var isShowingAlert: Bool = false
     @State private var alertTitle: String = ""
     @State private var alertMessage: String = ""
@@ -20,9 +21,24 @@ struct VoteCard: View {
         do {
             try await inputVote(voteId: voteId, choiceId: choiceId)
             
+            self.userVotedChoiceId = choiceId
+            
             self.alertTitle = "Vote Successfully"
             self.alertMessage = "Your vote has been successfully submitted. Thank you!"
             self.isShowingAlert = true
+        } catch {
+            self.alertTitle = "Oops.. There Is An Error"
+            self.alertMessage = "\(error.localizedDescription)"
+            self.isShowingAlert = true
+            return
+        }
+    }
+    
+    func checkUserVote() async {
+        do {
+            if let votedChoiceId = try await fetchUserVoteChoice(voteId: voteId) {
+                self.userVotedChoiceId = votedChoiceId
+            }
         } catch {
             self.alertTitle = "Oops.. There Is An Error"
             self.alertMessage = "\(error.localizedDescription)"
@@ -39,6 +55,9 @@ struct VoteCard: View {
                 .padding(.bottom, 4)
             
             ForEach(choices) { option in
+                let isSelected = userVotedChoiceId == option.choice_id
+                let hasVoted = userVotedChoiceId != nil
+                
                 Button(action: {
                     Task {
                         await handleVote(voteId: option.vote_id, choiceId: option.choice_id)
@@ -55,17 +74,22 @@ struct VoteCard: View {
                                     design: .monospaced
                                 )
                             )
-                            .foregroundColor(.secondary)
+                            .foregroundColor(isSelected ? .white.opacity(0.8) : .secondary)
                     }
                 })
+                .disabled(hasVoted)
                 .padding([.top, .bottom], 12)
                 .padding([.trailing, .leading], 8)
                 .fontWeight(.semibold)
-                .background(.white)
-                .foregroundStyle(.black)
+                .background(isSelected ? Color.green : Color.white)
+                .foregroundStyle(isSelected ? .white : .black)
                 .cornerRadius(8)
                 .padding(.bottom, 4)
+                .opacity(hasVoted && !isSelected ? 0.6 : 1.0)
             }
+        }
+        .task {
+            await checkUserVote()
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)

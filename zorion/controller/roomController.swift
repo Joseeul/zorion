@@ -303,3 +303,42 @@ func inputVote(voteId: UUID, choiceId: UUID) async throws {
         .insert(data)
         .execute()
 }
+
+// untuk cek apakah vote ada di room creator itu sendiri
+func checkIsCreatorRoom(roomId: UUID) async throws -> Bool {
+    let userId: UUID = try await client.auth.user().id
+    
+    let result: RoomModel = try await client
+        .from("room")
+        .select("*")
+        .eq("room_id", value: roomId)
+        .single()
+        .execute()
+        .value
+    
+    if result.room_owner == userId {
+        return true
+    } else {
+        return false
+    }
+}
+
+// untuk cek apakah user tesebut sudah vote atau belum
+func fetchUserVoteChoice(voteId: UUID) async throws -> UUID? {
+    let userId = try await client.auth.user().id
+    
+    struct VoteCheckResult: Codable {
+        let choice_id: UUID
+    }
+    
+    let result: [VoteCheckResult] = try await client
+        .from("vote_results")
+        .select("choice_id")
+        .eq("vote_id", value: voteId)
+        .eq("user_id", value: userId)
+        .limit(1)
+        .execute()
+        .value
+    
+    return result.first?.choice_id
+}
