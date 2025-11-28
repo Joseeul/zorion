@@ -85,3 +85,64 @@ struct MessageModel: Codable {
     let user: UserModel
     let room: RoomModel
 }
+
+// model untuk vote choice/option (struct internal)
+struct VoteOption: Identifiable {
+    var id = UUID()
+    var text: String = ""
+}
+
+// model untuk insert vote
+struct InsertVoteModel: Codable {
+    let room_id: UUID
+    let question: String
+}
+
+// model untuk insert choice
+struct InsertChoiceModel: Codable {
+    let vote_id: UUID
+    let choice: String
+}
+
+// model untuk fetch data vote
+struct VoteModel: Codable, Identifiable {
+    var id: UUID { vote_id }
+    
+    let vote_id: UUID
+    let created_at: Date
+    let room_id: UUID
+    let question: String
+    let vote_choices: [VoteChoiceModel]
+}
+
+// model untuk join vote dan choice
+struct VoteChoiceModel: Codable, Identifiable {
+    var id: UUID { choice_id }
+    
+    let choice_id: UUID
+    let created_at: Date
+    let vote_id: UUID
+    let choice: String
+    
+    private let vote_results: [VoteCountResult]?
+    
+    struct VoteCountResult: Codable {
+        let count: Int
+    }
+    
+    var totalVotes: Int {
+        return vote_results?.first?.count ?? 0
+    }
+}
+
+// untuk ambil vote_id
+struct InsertResponse: Codable {
+    let vote_id: UUID
+}
+
+// untuk input vote
+struct InputVoteModel: Codable {
+    let vote_id: UUID
+    let choice_id: UUID
+    let user_id: UUID
+}

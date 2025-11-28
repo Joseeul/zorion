@@ -98,6 +98,9 @@ struct DiscoverView: View {
             }
         }
         .tint(Color.zorionPrimary)
+        .onTapGesture {
+            hideKeyboard()
+        }
         .task {
             if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
                 return

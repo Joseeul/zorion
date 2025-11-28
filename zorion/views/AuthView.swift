@@ -155,6 +155,7 @@ struct AuthView: View {
                         )
                 )
                 .disableAutocorrection(true)
+                .textInputAutocapitalization(.never)
                 
                 Button(action: {
                     Task {

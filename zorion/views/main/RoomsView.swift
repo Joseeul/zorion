@@ -173,8 +173,12 @@ struct RoomsView: View {
             await fetchUser()
             await fetchCommunityRoom()
             
+            UserDefaults.standard.set(false, forKey: "isContentCreator")
+            
             if user?.content_creator == true {
                 await fetchUserRoom()
+                
+                UserDefaults.standard.set(true, forKey: "isContentCreator")
             }
         }
     }

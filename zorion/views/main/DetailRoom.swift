@@ -158,7 +158,7 @@ struct DetailRoom: View {
                         }
                     }
                 } else {
-                    NavigationLink(destination: VoteView()) {
+                    NavigationLink(destination: VoteView(roomId: roomId)) {
                         HStack {
                             Text("Vote")
                             
