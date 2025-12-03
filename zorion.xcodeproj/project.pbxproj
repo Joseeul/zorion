@@ -10,6 +10,7 @@
 		82B2A2CC2EDEB31900C0D2BB /* StreamVideo in Frameworks */ = {isa = PBXBuildFile; productRef = 82B2A2CB2EDEB31900C0D2BB /* StreamVideo */; };
 		82B2A2CE2EDEB31900C0D2BB /* StreamVideoSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 82B2A2CD2EDEB31900C0D2BB /* StreamVideoSwiftUI */; };
 		82B2A2D02EDEB31900C0D2BB /* StreamVideoUIKit in Frameworks */ = {isa = PBXBuildFile; productRef = 82B2A2CF2EDEB31900C0D2BB /* StreamVideoUIKit */; };
+		82B2A2D52EDF92C300C0D2BB /* SwiftJWT in Frameworks */ = {isa = PBXBuildFile; productRef = 82B2A2D42EDF92C300C0D2BB /* SwiftJWT */; };
 		9CB706122EA0B34700D6E14D /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = 9CB706112EA0B34700D6E14D /* Auth */; };
 		9CB706142EA0B34700D6E14D /* Functions in Frameworks */ = {isa = PBXBuildFile; productRef = 9CB706132EA0B34700D6E14D /* Functions */; };
 		9CB706162EA0B34700D6E14D /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = 9CB706152EA0B34700D6E14D /* PostgREST */; };
@@ -56,6 +57,7 @@
 				9CB7061A2EA0B34700D6E14D /* Storage in Frameworks */,
 				82B2A2CC2EDEB31900C0D2BB /* StreamVideo in Frameworks */,
 				82B2A2D02EDEB31900C0D2BB /* StreamVideoUIKit in Frameworks */,
+				82B2A2D52EDF92C300C0D2BB /* SwiftJWT in Frameworks */,
 				9CB706182EA0B34700D6E14D /* Realtime in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -116,6 +118,7 @@
 				82B2A2CB2EDEB31900C0D2BB /* StreamVideo */,
 				82B2A2CD2EDEB31900C0D2BB /* StreamVideoSwiftUI */,
 				82B2A2CF2EDEB31900C0D2BB /* StreamVideoUIKit */,
+				82B2A2D42EDF92C300C0D2BB /* SwiftJWT */,
 			);
 			productName = zorion;
 			productReference = 9CF4A6852E98FC9A0021139D /* zorion.app */;
@@ -148,6 +151,7 @@
 			packageReferences = (
 				9CB706102EA0B34700D6E14D /* XCRemoteSwiftPackageReference "supabase-swift" */,
 				82B2A2CA2EDEB31900C0D2BB /* XCRemoteSwiftPackageReference "stream-video-swift" */,
+				82B2A2D32EDF92C300C0D2BB /* XCRemoteSwiftPackageReference "Swift-JWT" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9CF4A6862E98FC9A0021139D /* Products */;
@@ -413,6 +417,14 @@
 				minimumVersion = 1.37.0;
 			};
 		};
+		82B2A2D32EDF92C300C0D2BB /* XCRemoteSwiftPackageReference "Swift-JWT" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Kitura/Swift-JWT";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.0.2;
+			};
+		};
 		9CB706102EA0B34700D6E14D /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/supabase-community/supabase-swift.git";
@@ -438,6 +450,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 82B2A2CA2EDEB31900C0D2BB /* XCRemoteSwiftPackageReference "stream-video-swift" */;
 			productName = StreamVideoUIKit;
+		};
+		82B2A2D42EDF92C300C0D2BB /* SwiftJWT */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 82B2A2D32EDF92C300C0D2BB /* XCRemoteSwiftPackageReference "Swift-JWT" */;
+			productName = SwiftJWT;
 		};
 		9CB706112EA0B34700D6E14D /* Auth */ = {
 			isa = XCSwiftPackageProductDependency;

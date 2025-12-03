@@ -56,6 +56,7 @@ struct RoomsView: View {
         do {
             communityRoom = try await fetchUserCommunityRoom()
             await filterCommunityRoom()
+            try await getValidJWT()
         } catch {
             isLoading = false
             self.alertTitle = "Oops.. There Is An Error"

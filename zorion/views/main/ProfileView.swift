@@ -20,6 +20,9 @@ struct ProfileView: View {
         
         do {
             user = try await fetchSingleUserData()
+            
+            UserDefaults.standard.set(user?.profile_picture, forKey: "userImage")
+            UserDefaults.standard.set(user?.username, forKey: "userUsername")
         } catch {
             isLoading = false
             self.alertTitle = "Oops.. There Is An Error"
@@ -218,6 +221,7 @@ struct ProfileView: View {
                         UserDefaults.standard.removeObject(forKey: "roomDesc")
                         UserDefaults.standard.removeObject(forKey: "useOauth")
                         UserDefaults.standard.removeObject(forKey: "userId")
+                        UserDefaults.standard.removeObject(forKey: "JWT")
                     }, label: {
                         Text("LOGOUT")
                             .font(.subheadline)
