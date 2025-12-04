@@ -23,6 +23,9 @@ struct RoomsView: View {
         
         do {
             user = try await fetchSingleUserData()
+            
+            UserDefaults.standard.set(user?.profile_picture, forKey: "userImage")
+            UserDefaults.standard.set(user?.username, forKey: "userUsername")
         } catch {
             isLoading = false
             self.alertTitle = "Oops.. There Is An Error"
@@ -56,6 +59,7 @@ struct RoomsView: View {
         do {
             communityRoom = try await fetchUserCommunityRoom()
             await filterCommunityRoom()
+            try await getValidJWT()
         } catch {
             isLoading = false
             self.alertTitle = "Oops.. There Is An Error"

@@ -218,6 +218,7 @@ struct ProfileView: View {
                         UserDefaults.standard.removeObject(forKey: "roomDesc")
                         UserDefaults.standard.removeObject(forKey: "useOauth")
                         UserDefaults.standard.removeObject(forKey: "userId")
+                        UserDefaults.standard.removeObject(forKey: "JWT")
                     }, label: {
                         Text("LOGOUT")
                             .font(.subheadline)

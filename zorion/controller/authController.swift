@@ -8,6 +8,7 @@
 import Foundation
 import Supabase
 import AuthenticationServices
+import SwiftJWT
 
 struct AuthController {
     private let client = SupabaseManager.shared.client
@@ -19,6 +20,8 @@ struct AuthController {
         let user = try await client.auth.user()
         let userId = user.id.uuidString
         UserDefaults.standard.set(userId, forKey: "userId")
+        let jwt = try await generateStreamToken(userId: userId)
+        UserDefaults.standard.set(jwt, forKey: "JWT")
         
         print("✅ Register with email and password success")
     }
@@ -30,6 +33,10 @@ struct AuthController {
         let user = try await client.auth.user()
         let userId = user.id.uuidString
         UserDefaults.standard.set(userId, forKey: "userId")
+        
+        let jwt = try await generateStreamToken(userId: userId)
+        
+        UserDefaults.standard.set(jwt, forKey: "JWT")
         
         print("✅ Login with email and password success")
     }
