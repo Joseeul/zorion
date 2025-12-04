@@ -38,8 +38,6 @@ struct AuthController {
         
         UserDefaults.standard.set(jwt, forKey: "JWT")
         
-        try await client.auth.getClaims()
-        
         print("✅ Login with email and password success")
     }
     

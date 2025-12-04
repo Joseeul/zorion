@@ -13,6 +13,8 @@ struct AudioRoomView: View {
     @ObservedObject var state: CallState
     @State private var callCreated: Bool = false
     @State var roomId: UUID
+    @Environment(\.dismiss) var dismiss
+    @State private var micIsOpen: Bool = false
     
     private var client: StreamVideo
     private let apiKey: String = "2qb8kbr3uzjb"
@@ -30,18 +32,15 @@ struct AudioRoomView: View {
         self._roomId = State(initialValue: roomId)
         let user = User(
             id: userId,
-            name: username, // name and imageURL are used in the UI
+            name: username,
             imageURL: UserDefaults.standard.url(forKey: "userImage")
         )
         
-        // Initialize Stream Video client
         self.client = StreamVideo(
             apiKey: apiKey,
             user: user,
             token: .init(stringLiteral: token)
         )
-        
-        // Initialize the call object
         
         let call = client.call(callType: "audio_room", callId: roomId.uuidString)
         
@@ -50,32 +49,30 @@ struct AudioRoomView: View {
     }
     
     var headerView: some View {
-        HStack {
-            Image(systemName: "number")
-                .foregroundColor(.gray)
-            Text("General Voice") // Bisa diganti nama room
-                .font(.headline)
-                .foregroundColor(.white)
-            Spacer()
-            
-            // Indikator Koneksi
-            HStack(spacing: 5) {
-                Circle()
-                    .fill(callCreated ? Color.discordGreen : .orange)
-                    .frame(width: 8, height: 8)
-                Text(callCreated ? "Connected" : "Connecting...")
-                    .font(.caption)
-                    .foregroundColor(.gray)
+        VStack {
+            HStack {
+                HStack(spacing: 5) {
+                    Circle()
+                        .foregroundStyle(callCreated ? Color.green : Color.red)
+                        .frame(width: 8, height: 8)
+                    Text(callCreated ? "Voice Connected" : "Connecting...")
+                        .font(.caption)
+                        .foregroundColor(.zorionGray)
+                }
+                
+                Spacer()
             }
+            
+            Divider()
+                .padding(.top, 8)
         }
         .padding()
-        .background(Color.discordDarkGray)
     }
     
     var loadingView: some View {
         VStack {
             ProgressView()
-                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                .progressViewStyle(CircularProgressViewStyle(tint: .zorionPrimary))
                 .scaleEffect(1.5)
             Text("Connecting to server...")
                 .foregroundColor(.gray)
@@ -85,79 +82,75 @@ struct AudioRoomView: View {
     }
     
     var controlBar: some View {
-        HStack(spacing: 30) {
-            // Mute/Unmute Button
-            Button(action: {
-                Task { try? await call.microphone.toggle() }
-            }) {
-                VStack {
-                    Image(systemName: call.microphone.status == .enabled ? "mic.fill" : "mic.slash.fill")
-                        .font(.title2)
-                        .foregroundColor(call.microphone.status == .enabled ? .white : .discordRed)
-                        .frame(width: 50, height: 50)
-                        .background(Color.discordCard)
-                        .clipShape(Circle())
-                    Text("Mic")
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                }
-            }
-            
-            // Leave Button (Merah Besar)
+        HStack(spacing: 20) {
             Button(action: {
                 Task {
                     call.leave()
-                    // Tambahkan logic dismiss view di sini jika perlu
-                    // dismiss()
+                    dismiss()
                 }
             }) {
-                VStack {
+                ZStack {
+                    Circle()
+                        .fill(Color.meetRed)
+                        .frame(width: 50, height: 50)
+                    
                     Image(systemName: "phone.down.fill")
-                        .font(.title2)
+                        .font(.system(size: 20))
                         .foregroundColor(.white)
-                        .frame(width: 60, height: 60)
-                        .background(Color.discordRed)
-                        .clipShape(Circle())
-                    Text("Disconnect")
-                        .font(.caption)
-                        .foregroundColor(.gray)
                 }
             }
             
-            // Speaker Toggle (Optional)
+            Spacer()
+            
             Button(action: {
-//                Task { try? await call.speaker.toggle() }
+                micIsOpen = !micIsOpen
+                
+                Task {
+                    if micIsOpen == true {
+                        try await call.microphone.enable()
+                    } else if micIsOpen == false {
+                        try await call.microphone.disable()
+                    }
+                }
             }) {
-                VStack {
-                    Image(systemName: call.speaker.status == .enabled ? "speaker.wave.2.fill" : "speaker.slash.fill")
-                        .font(.title2)
-                        .foregroundColor(.white)
+                ZStack {
+                    Circle()
+                        .fill(call.microphone.status == .enabled ? Color.white : Color.meetButtonGray)
                         .frame(width: 50, height: 50)
-                        .background(Color.discordCard)
-                        .clipShape(Circle())
-                    Text("Speaker")
-                        .font(.caption)
-                        .foregroundColor(.gray)
+                    
+                    Image(systemName: call.microphone.status == .enabled ? "mic.fill" : "mic.slash.fill")
+                        .font(.system(size: 20))
+                        .foregroundColor(call.microphone.status == .enabled ? .black : .white)
+                }
+            }
+            
+            Button(action: {
+                Task { try await call.speaker.enableAudioOutput() }
+            }) {
+                ZStack {
+                    Circle()
+                        .fill(call.speaker.status == .enabled ? Color.white : Color.meetButtonGray)
+                        .frame(width: 50, height: 50)
+                    
+                    Image(systemName: call.speaker.status == .enabled ? "speaker.wave.2.fill" : "speaker.slash.fill")
+                        .font(.system(size: 20))
+                        .foregroundColor(call.speaker.status == .enabled ? .black : .white)
                 }
             }
         }
-        .padding(.vertical, 20)
-        .padding(.bottom, 10) // Extra padding for safe area
-        .frame(maxWidth: .infinity)
-        .background(Color.discordDarkGray)
-        .cornerRadius(20, corners: [.topLeft, .topRight])
+        .padding(.vertical, 12)
+        .padding(.horizontal, 20)
+        .background(Color(uiColor: .systemGray6))
+        .clipShape(Capsule())
+        .padding(.horizontal, 30)
+        .padding(.bottom, 20)
     }
     
     var body: some View {
         ZStack {
-            // Background ala Discord
-            Color.discordBackground.ignoresSafeArea()
-            
             VStack(spacing: 0) {
-                // Header
                 headerView
                 
-                // Main Content (Grid Peserta)
                 ScrollView {
                     if callCreated {
                         LazyVGrid(columns: columns, spacing: 10) {
@@ -171,9 +164,10 @@ struct AudioRoomView: View {
                     }
                 }
                 
-                // Bottom Controls
                 if callCreated {
+                    Spacer()
                     controlBar
+                        .padding(.bottom, 30)
                 }
             }
         }
@@ -182,13 +176,10 @@ struct AudioRoomView: View {
                 guard !callCreated else { return }
                 
                 do {
-                    // Coba join sebagai participant
                     try await call.join()
                     callCreated = true
                 } catch {
-                    // cek apakah errornya karena "call tidak ada"
                     if "\(error)".contains("call does not exist") {
-                        // user pertama → buat call
                         try await call.join(create: true)
                         callCreated = true
                     } else {
@@ -203,53 +194,57 @@ struct AudioRoomView: View {
 struct ParticipantView: View {
     var participant: CallParticipant
     
+    private let speakingColor: Color = .blue
+    private let muteColor: Color = .red
+    private let cardBackground: Color = .white
+    
     var body: some View {
-        VStack {
+        VStack(spacing: 12) {
             ZStack(alignment: .bottomTrailing) {
-                // Avatar Circle
                 AsyncImage(url: participant.profileImageURL) { image in
                     image.resizable().scaledToFill()
                 } placeholder: {
-                    Image(systemName: "person.fill")
-                        .foregroundColor(.gray)
+                    Image(systemName: "person.circle.fill")
+                        .resizable()
+                        .foregroundColor(Color(uiColor: .systemGray4))
                 }
                 .frame(width: 80, height: 80)
                 .clipShape(Circle())
                 .overlay(
                     Circle()
-                        .stroke(
-                            participant.isSpeaking ? Color.discordGreen : Color.clear,
-                            lineWidth: 4
-                        )
+                        .stroke(speakingColor, lineWidth: participant.isSpeaking ? 3 : 0)
+                        .animation(.easeInOut(duration: 0.2), value: participant.isSpeaking)
                 )
-                .shadow(color: participant.isSpeaking ? Color.discordGreen.opacity(0.5) : .clear, radius: 5)
                 
-                // Mute Icon Indicator (Small red mic)
                 if !participant.hasAudio {
                     Image(systemName: "mic.slash.fill")
+                        .font(.system(size: 12, weight: .bold))
                         .foregroundColor(.white)
-                        .padding(4)
-                        .background(Color.discordRed)
+                        .padding(6)
+                        .background(muteColor)
                         .clipShape(Circle())
-                        .overlay(Circle().stroke(Color.discordCard, lineWidth: 2))
-                        .offset(x: 0, y: 0)
+                        .overlay(
+                            Circle()
+                                .stroke(cardBackground, lineWidth: 2)
+                        )
+                        .offset(x: 5, y: 5)
                 }
             }
             
-            // Username
             Text(participant.name.isEmpty ? participant.userId : participant.name)
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundColor(.white)
+                .font(.system(size: 15, weight: .medium))
+                .foregroundColor(.primary)
                 .lineLimit(1)
+                .padding(.horizontal, 8)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 16)
-        .background(Color.discordCard)
-        .cornerRadius(12)
+        .padding(.vertical, 20)
+        .background(cardBackground)
+        .cornerRadius(16)
+        .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 4)
     }
 }
 
-// Helper untuk rounded corner spesifik
 extension View {
     func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
         clipShape(RoundedCorner(radius: radius, corners: corners))
@@ -267,13 +262,25 @@ struct RoundedCorner: Shape {
 }
 
 extension Color {
-    static let discordBackground = Color(red: 0.18, green: 0.19, blue: 0.21) // #2F3136
-    static let discordCard = Color(red: 0.22, green: 0.24, blue: 0.26)      // #36393F
-    static let discordGreen = Color(red: 0.26, green: 0.73, blue: 0.45)     // #43B581
-    static let discordRed = Color(red: 0.94, green: 0.28, blue: 0.28)       // #F04747
-    static let discordDarkGray = Color(red: 0.13, green: 0.14, blue: 0.15)  // #202225
+    static let meetDarkGray = Color(red: 0.12, green: 0.12, blue: 0.12)
+    static let meetTileColor = Color(red: 0.24, green: 0.25, blue: 0.26)
+    static let meetRed = Color(red: 0.92, green: 0.26, blue: 0.21)
+    static let meetBlue = Color(red: 0.53, green: 0.81, blue: 0.98)
+    static let meetButtonGray = Color(red: 0.24, green: 0.25, blue: 0.26)
 }
 
 #Preview {
-    AudioRoomView(roomId: UUID())
+    PreviewWrapper()
+}
+
+struct PreviewWrapper: View {
+    init() {
+        UserDefaults.standard.set("dummy_user_id", forKey: "userId")
+        UserDefaults.standard.set("Preview User", forKey: "userUsername")
+        UserDefaults.standard.set("dummy_jwt_token", forKey: "JWT")
+    }
+    
+    var body: some View {
+        AudioRoomView(roomId: UUID())
+    }
 }
