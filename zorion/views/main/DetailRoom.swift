@@ -194,7 +194,7 @@ struct DetailRoom: View {
                     .padding(.top, 8)
                     .buttonStyle(.plain)
                     
-                    NavigationLink(destination: ChatView(roomId: roomId)) {
+                    NavigationLink(destination: AudioRoomView(roomId: roomId)) {
                         HStack {
                             Text("Voice & video")
                             
