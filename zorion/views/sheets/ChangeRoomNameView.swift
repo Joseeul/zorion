@@ -8,8 +8,42 @@
 import SwiftUI
 
 struct ChangeRoomNameView: View {
+    @State private var inputedRoomName: String = ""
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack {
+            TextField(
+                "Room name",
+                text: $inputedRoomName
+            )
+            .padding(.vertical, 12)
+            .padding(.horizontal, 8)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(
+                        Color.zorionGray,
+                        lineWidth: 0.5
+                    )
+            )
+            .padding(.bottom, 8)
+            
+            Button(action: {}, label: {
+                Text("Change room name")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+            })
+            .frame(maxWidth: .infinity)
+            .padding([.top, .bottom], 12)
+            .padding([.trailing, .leading], 8)
+            .fontWeight(.semibold)
+            .background(.zorionPrimary)
+            .foregroundStyle(.white)
+            .cornerRadius(8)
+            
+            Spacer()
+        }
+        .padding(.top, 30)
+        .padding()
     }
 }
 
