@@ -7,13 +7,31 @@
 
 import SwiftUI
 
+enum ActiveSheet: Identifiable {
+    case changeUsername
+    case changeProfilePicture
+    case contentCreator
+    case changeRoomPhoto
+    case changeRoomName
+    case changeRoomDescription
+    case manageRoomMembers
+    case changeTheme
+    
+    var id: String {
+        return String(describing: self)
+    }
+}
+
 struct ProfileView: View {
     @State private var user: UserModel? = nil
     @State private var isLoading: Bool = false
     @State private var isShowingAlert: Bool = false
     @State private var alertTitle: String = ""
     @State private var alertMessage: String = ""
+    @State private var activeSheet: ActiveSheet?
     @EnvironmentObject var tabBarManager: TabBarManager
+    
+    @State private var tempCreator: Bool = true
     
     func fetchUser() async {
         isLoading = true
@@ -67,7 +85,9 @@ struct ProfileView: View {
                             .padding(.vertical, 12)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         
-                        Button(action: {}, label: {
+                        Button(action: {
+                            activeSheet = .changeUsername
+                        }, label: {
                             Text("Change username")
                             
                             Spacer()
@@ -82,7 +102,9 @@ struct ProfileView: View {
                         .cornerRadius(8)
                         .padding(.bottom, 8)
                         
-                        Button(action: {}, label: {
+                        Button(action: {
+                            activeSheet = .changeProfilePicture
+                        }, label: {
                             Text("Change profile picture")
                             
                             Spacer()
@@ -97,7 +119,9 @@ struct ProfileView: View {
                         .cornerRadius(8)
                         .padding(.bottom, 8)
                         
-                        Button(action: {}, label: {
+                        Button(action: {
+                            activeSheet = .contentCreator
+                        }, label: {
                             Text("I'm a content creator")
                             
                             Spacer()
@@ -113,7 +137,7 @@ struct ProfileView: View {
                         .padding(.bottom, 8)
                     }
                     
-                    if user?.content_creator == true {
+                    if tempCreator == true {
                         Group {
                             Text("Creator Settings")
                                 .font(.title2)
@@ -121,7 +145,9 @@ struct ProfileView: View {
                                 .padding(.vertical, 12)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             
-                            Button(action: {}, label: {
+                            Button(action: {
+                                activeSheet = .changeRoomPhoto
+                            }, label: {
                                 Text("Change room photo")
                                 
                                 Spacer()
@@ -136,7 +162,9 @@ struct ProfileView: View {
                             .cornerRadius(8)
                             .padding(.bottom, 8)
                             
-                            Button(action: {}, label: {
+                            Button(action: {
+                                activeSheet = .changeRoomName
+                            }, label: {
                                 Text("Change room name")
                                 
                                 Spacer()
@@ -151,7 +179,9 @@ struct ProfileView: View {
                             .cornerRadius(8)
                             .padding(.bottom, 8)
                             
-                            Button(action: {}, label: {
+                            Button(action: {
+                                activeSheet = .changeRoomDescription
+                            }, label: {
                                 Text("Change room description")
                                 
                                 Spacer()
@@ -166,7 +196,9 @@ struct ProfileView: View {
                             .cornerRadius(8)
                             .padding(.bottom, 8)
                             
-                            Button(action: {}, label: {
+                            Button(action: {
+                                activeSheet = .manageRoomMembers
+                            }, label: {
                                 Text("Manage room members")
                                 
                                 Spacer()
@@ -189,7 +221,9 @@ struct ProfileView: View {
                             .padding(.vertical, 12)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         
-                        Button(action: {}, label: {
+                        Button(action: {
+                            activeSheet = .changeTheme
+                        }, label: {
                             Text("Theme")
                             
                             Spacer()
@@ -250,6 +284,37 @@ struct ProfileView: View {
             }
             
             await fetchUser()
+        }
+        .sheet(item: $activeSheet) { item in
+            Group {
+                switch item {
+                case .changeUsername:
+                    ChangeUsernameView()
+                    
+                case .changeProfilePicture:
+                    ChangeProfilePictureView()
+                    
+                case .contentCreator:
+                    SubmitCreatorView()
+                    
+                case .changeRoomPhoto:
+                    ChangeRoomPhotoView()
+                    
+                case .changeRoomName:
+                    ChangeRoomNameView()
+                    
+                case .changeRoomDescription:
+                    ChangeRoomDescriptionView()
+                    
+                case .manageRoomMembers:
+                    ManageRoomMembersView()
+                    
+                case .changeTheme:
+                    ChangeThemeView()
+                }
+            }
+            .presentationDetents([.medium])
+            .presentationBackground(.white)
         }
     }
 }
