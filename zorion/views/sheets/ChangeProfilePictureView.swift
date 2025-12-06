@@ -9,10 +9,33 @@ import SwiftUI
 
 struct ChangeProfilePictureView: View {
     @State private var selectedProfilePicture: String = ""
+    @State private var isShowingAlert: Bool = false
+    @State private var alertTitle: String = ""
+    @State private var alertMessage: String = ""
+    @Environment(\.dismiss) var dismiss
+    
+    func handleProfileUpdate() async {
+        do {
+            try await userPictureUpdate(newPicture: selectedProfilePicture)
+            
+            dismiss()
+        } catch {
+            self.alertTitle = "Oops.. There Is An Error"
+            self.alertMessage = "\(error.localizedDescription)"
+            self.isShowingAlert = true
+            return
+        }
+    }
     
     var body: some View {
         VStack(alignment: .leading) {
             VStack {
+                Text("Change profile picture")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.bottom, 8)
+                
                 HStack(spacing: 24) {
                     Button(action: {}, label: {
                         Image(systemName: "plus")
@@ -142,7 +165,11 @@ struct ChangeProfilePictureView: View {
             Text("Image selected: \(selectedProfilePicture)")
                 .padding(.top, 8)
             
-            Button(action: {}, label: {
+            Button(action: {
+                Task {
+                    await handleProfileUpdate()
+                }
+            }, label: {
                 Text("Change profile picture")
                     .font(.subheadline)
                     .fontWeight(.semibold)
@@ -160,6 +187,11 @@ struct ChangeProfilePictureView: View {
         }
         .padding(.top, 30)
         .padding()
+        .alert(alertTitle, isPresented: $isShowingAlert, presenting: alertMessage) {
+            message in Button("OK", role: .cancel) {}
+        } message: {
+            message in Text(message)
+        }
     }
 }
 

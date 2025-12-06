@@ -9,9 +9,48 @@ import SwiftUI
 
 struct ChangeUsernameView: View {
     @State private var inputedUsername: String = ""
+    @State private var isShowingAlert: Bool = false
+    @State private var alertTitle: String = ""
+    @State private var alertMessage: String = ""
+    @Environment(\.dismiss) var dismiss
+    
+    func handleUsernameUpdate() async {
+        if inputedUsername.isEmpty {
+            self.alertTitle = "Missing Input"
+            self.alertMessage = "Please fill all the field."
+            self.isShowingAlert = true
+            return
+        }
+        
+        if inputedUsername.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            self.alertTitle = "Missing Input"
+            self.alertMessage = "Please fill all the field."
+            self.isShowingAlert = true
+            return
+        }
+        
+        do {
+            try await usernameUpdate(newUsername: inputedUsername)
+            
+            inputedUsername = ""
+            
+            dismiss()
+        } catch {
+            self.alertTitle = "Oops.. There Is An Error"
+            self.alertMessage = "\(error.localizedDescription)"
+            self.isShowingAlert = true
+            return
+        }
+    }
     
     var body: some View {
         VStack {
+            Text("Change your username")
+                .font(.title2)
+                .fontWeight(.bold)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.bottom, 8)
+            
             TextField(
                 "Username",
                 text: $inputedUsername
@@ -27,7 +66,11 @@ struct ChangeUsernameView: View {
             )
             .padding(.bottom, 8)
             
-            Button(action: {}, label: {
+            Button(action: {
+                Task {
+                    await handleUsernameUpdate()
+                }
+            }, label: {
                 Text("Change username")
                     .font(.subheadline)
                     .fontWeight(.semibold)
@@ -44,6 +87,11 @@ struct ChangeUsernameView: View {
         }
         .padding(.top, 30)
         .padding()
+        .alert(alertTitle, isPresented: $isShowingAlert, presenting: alertMessage) {
+            message in Button("OK", role: .cancel) {}
+        } message: {
+            message in Text(message)
+        }
     }
 }
 

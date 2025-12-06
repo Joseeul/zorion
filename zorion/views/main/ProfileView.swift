@@ -119,22 +119,25 @@ struct ProfileView: View {
                         .cornerRadius(8)
                         .padding(.bottom, 8)
                         
-                        Button(action: {
-                            activeSheet = .contentCreator
-                        }, label: {
-                            Text("I'm a content creator")
-                            
-                            Spacer()
-                            
-                            Image(systemName: "chevron.right")
-                        })
-                        .frame(maxWidth: .infinity)
-                        .padding([.top, .bottom], 12)
-                        .padding([.trailing, .leading], 8)
-                        .background(.zorionSettings)
-                        .foregroundStyle(.zorionGray)
-                        .cornerRadius(8)
-                        .padding(.bottom, 8)
+                        if tempCreator == false {
+                        } else {
+                            Button(action: {
+                                activeSheet = .contentCreator
+                            }, label: {
+                                Text("I'm a content creator")
+                                
+                                Spacer()
+                                
+                                Image(systemName: "chevron.right")
+                            })
+                            .frame(maxWidth: .infinity)
+                            .padding([.top, .bottom], 12)
+                            .padding([.trailing, .leading], 8)
+                            .background(.zorionSettings)
+                            .foregroundStyle(.zorionGray)
+                            .cornerRadius(8)
+                            .padding(.bottom, 8)
+                        }
                     }
                     
                     if tempCreator == true {

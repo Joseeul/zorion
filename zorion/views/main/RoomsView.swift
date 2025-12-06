@@ -26,6 +26,7 @@ struct RoomsView: View {
             
             UserDefaults.standard.set(user?.profile_picture, forKey: "userImage")
             UserDefaults.standard.set(user?.username, forKey: "userUsername")
+            UserDefaults.standard.set(user?.profile_picture.absoluteString, forKey: "userProfileLink")
         } catch {
             isLoading = false
             self.alertTitle = "Oops.. There Is An Error"
@@ -183,6 +184,7 @@ struct RoomsView: View {
                 await fetchUserRoom()
                 
                 UserDefaults.standard.set(true, forKey: "isContentCreator")
+                UserDefaults.standard.set(room?.room_id.uuidString, forKey: "userRoomId")
             }
         }
     }

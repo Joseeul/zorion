@@ -9,10 +9,33 @@ import SwiftUI
 
 struct ChangeRoomPhotoView: View {
     @State private var selectedRoomPicture: String = ""
+    @State private var isShowingAlert: Bool = false
+    @State private var alertTitle: String = ""
+    @State private var alertMessage: String = ""
+    @Environment(\.dismiss) var dismiss
+    
+    func handleRoomPhotoUpdate() async {
+        do {
+            try await roomPictureUpdate(newPicture: selectedRoomPicture)
+            
+            dismiss()
+        } catch {
+            self.alertTitle = "Oops.. There Is An Error"
+            self.alertMessage = "\(error.localizedDescription)"
+            self.isShowingAlert = true
+            return
+        }
+    }
     
     var body: some View {
         VStack(alignment: .leading) {
             VStack {
+                Text("Change room photo")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.bottom, 8)
+                
                 HStack(spacing: 24) {
                     Button(action: {}, label: {
                         Image(systemName: "plus")
@@ -143,7 +166,11 @@ struct ChangeRoomPhotoView: View {
             Text("Image selected: \(selectedRoomPicture)")
                 .padding(.top, 8)
             
-            Button(action: {}, label: {
+            Button(action: {
+                Task {
+                    await handleRoomPhotoUpdate()
+                }
+            }, label: {
                 Text("Change room photo")
                     .font(.subheadline)
                     .fontWeight(.semibold)
@@ -161,6 +188,11 @@ struct ChangeRoomPhotoView: View {
         }
         .padding(.top, 30)
         .padding()
+        .alert(alertTitle, isPresented: $isShowingAlert, presenting: alertMessage) {
+            message in Button("OK", role: .cancel) {}
+        } message: {
+            message in Text(message)
+        }
     }
     
 }
