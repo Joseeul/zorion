@@ -43,6 +43,8 @@ struct RoomsView: View {
         
         do {
             room = try await fetchCreatorRoom()
+            
+            UserDefaults.standard.set(room?.room_id.uuidString, forKey: "userRoomId")
         } catch {
             isLoading = false
             self.alertTitle = "Oops.. There Is An Error"

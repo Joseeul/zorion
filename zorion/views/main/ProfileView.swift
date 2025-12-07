@@ -140,7 +140,7 @@ struct ProfileView: View {
                         }
                     }
                     
-                    if user?.content_creator == true {
+                    if tempCreator == true {
                         Group {
                             Text("Creator Settings")
                                 .font(.title2)

@@ -342,3 +342,30 @@ func fetchUserVoteChoice(voteId: UUID) async throws -> UUID? {
     
     return result.first?.choice_id
 }
+
+// fetch semua member kecuali diri kita sendiri sebagai creator
+func fetchOtherMember(roomId: UUID) async throws -> [UserModel] {
+    let userId: UUID = try await client.auth.user().id
+    
+    let result: [AllRoomMember] = try await client
+        .from("room_members")
+        .select("*, user(*)")
+        .eq("room_id", value: roomId)
+        .neq("user_id", value: userId)
+        .execute()
+        .value
+    
+    let users = result.map { $0.user }
+    
+    return users
+}
+
+// untuk delete member
+func deleteMember(userId: UUID, roomId: UUID) async throws {
+    try await client
+        .from("room_members")
+        .delete()
+        .eq("user_id", value: userId)
+        .eq("room_id", value: roomId)
+        .execute()
+}
