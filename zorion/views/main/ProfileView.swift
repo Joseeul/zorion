@@ -217,31 +217,6 @@ struct ProfileView: View {
                         }
                     }
                     
-                    Group {
-                        Text("App Settings")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                            .padding(.vertical, 12)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        
-                        Button(action: {
-                            activeSheet = .changeTheme
-                        }, label: {
-                            Text("Theme")
-                            
-                            Spacer()
-                            
-                            Image(systemName: "chevron.right")
-                        })
-                        .frame(maxWidth: .infinity)
-                        .padding([.top, .bottom], 12)
-                        .padding([.trailing, .leading], 8)
-                        .background(.zorionSettings)
-                        .foregroundStyle(.zorionGray)
-                        .cornerRadius(8)
-                        .padding(.bottom, 8)
-                    }
-                    
                     Button(action: {
                         Task {
                             try await AuthController().signOutUser()
@@ -268,6 +243,7 @@ struct ProfileView: View {
                     .background(.zorionPrimary)
                     .foregroundStyle(.white)
                     .cornerRadius(8)
+                    .padding(.top, 12)
                 }
             }
         }
