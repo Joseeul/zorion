@@ -369,3 +369,15 @@ func deleteMember(userId: UUID, roomId: UUID) async throws {
         .eq("room_id", value: roomId)
         .execute()
 }
+
+// fetch semua room yang di search
+func searchedRoom(roomName: String) async throws -> [RoomModel] {
+    let result: [RoomModel] = try await client
+        .from("room")
+        .select()
+        .ilike("room_name", pattern: "%\(roomName)%")
+        .execute()
+        .value
+    
+    return result
+}

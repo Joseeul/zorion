@@ -10,6 +10,7 @@ import SwiftUI
 struct DiscoverView: View {
     @State private var searchQuery: String = ""
     @State private var isLoading: Bool = false
+    @State private var isSearched: Bool = false
     @State private var isShowingAlert: Bool = false
     @State private var alertTitle: String = ""
     @State private var alertMessage: String = ""
@@ -21,6 +22,25 @@ struct DiscoverView: View {
         
         do {
             rooms = try await fetchAllRoom()
+        } catch {
+            isLoading = false
+            self.alertTitle = "Oops.. There Is An Error"
+            self.alertMessage = "\(error.localizedDescription)"
+            self.isShowingAlert = true
+            return
+        }
+        
+        isLoading = false
+    }
+    
+    func handleSearch() async {
+        isLoading = true
+        
+        do {
+            rooms = try await searchedRoom(roomName: searchQuery)
+            
+            isSearched = true
+            searchQuery = ""
         } catch {
             isLoading = false
             self.alertTitle = "Oops.. There Is An Error"
@@ -54,17 +74,40 @@ struct DiscoverView: View {
                                     )
                             )
                             
-                            Button(action: {}, label: {
-                                Image(systemName: "magnifyingglass")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: 16, height: 16)
-                                    .foregroundColor(.white)
-                                    .fontWeight(.semibold)
-                            })
-                            .padding(14)
-                            .background(.zorionPrimary)
-                            .clipShape(Circle())
+                            if isSearched == false || !searchQuery.isEmpty {
+                                Button(action: {
+                                    Task {
+                                        await handleSearch()
+                                    }
+                                }, label: {
+                                    Image(systemName: "magnifyingglass")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 16, height: 16)
+                                        .foregroundColor(.white)
+                                        .fontWeight(.semibold)
+                                })
+                                .padding(14)
+                                .background(.zorionPrimary)
+                                .clipShape(Circle())
+                            } else {
+                                Button(action: {
+                                    Task {
+                                        await fetchData()
+                                        isSearched = false
+                                    }
+                                }, label: {
+                                    Image(systemName: "xmark")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 16, height: 16)
+                                        .foregroundColor(.white)
+                                        .fontWeight(.semibold)
+                                })
+                                .padding(14)
+                                .background(.zorionPrimary)
+                                .clipShape(Circle())
+                            }
                         }
                         
                         Text("Discover popular rooms")
