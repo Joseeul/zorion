@@ -60,7 +60,11 @@ struct CreateProfilePictureView: View {
             
             VStack {
                 HStack(spacing: 24) {
-                    Button(action: {}, label: {
+                    Button(action: {
+                        self.alertTitle = "You can't do this now"
+                        self.alertMessage = "Please change your custom image via profile after your account is successfully created."
+                        self.isShowingAlert = true
+                    }, label: {
                         Image(systemName: "plus")
                             .resizable()
                             .aspectRatio(contentMode: .fill)

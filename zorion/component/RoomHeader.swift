@@ -17,9 +17,9 @@ struct RoomHeader: View {
             AsyncImage(url: imageUrl) { image in
                 image
                     .resizable()
-                    .scaledToFit()
+                    .aspectRatio(contentMode: .fill)
                     .clipShape(.circle)
-                    .frame(width: 42)
+                    .frame(width: 42, height: 42)
             } placeholder: {
                 Color.gray.opacity(0.3)
                     .frame(width: 42, height: 42)

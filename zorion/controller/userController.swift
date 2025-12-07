@@ -124,6 +124,4 @@ func getValidJWT() async throws {
     let session = try await client.auth.session
     
     UserDefaults.standard.set(session.accessToken, forKey: "UserJWT")
-    
-    print("ACC TOKEN :\(session.accessToken)")
 }
