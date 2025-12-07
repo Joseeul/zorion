@@ -119,7 +119,7 @@ struct ProfileView: View {
                         .cornerRadius(8)
                         .padding(.bottom, 8)
                         
-                        if tempCreator == false {
+                        if user?.content_creator == true {
                         } else {
                             Button(action: {
                                 activeSheet = .contentCreator
@@ -140,7 +140,7 @@ struct ProfileView: View {
                         }
                     }
                     
-                    if tempCreator == true {
+                    if user?.content_creator == true {
                         Group {
                             Text("Creator Settings")
                                 .font(.title2)

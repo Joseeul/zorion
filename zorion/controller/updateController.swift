@@ -146,3 +146,67 @@ func roomPictureUpdate(newPicture: String) async throws {
         .eq("room_id", value: roomId)
         .execute()
 }
+
+// menambahkan creator baru
+func addNewCreator(roomName: String, roomDesc: String, roomPicture: String) async throws {
+    let userId: UUID = try await client.auth.user().id
+    
+    // update status creator di table user
+    try await client
+        .from("user")
+        .update(["content_creator" : true])
+        .eq("user_id", value: userId)
+        .execute()
+    
+    // insert room data ke tabel
+    let room = InsertRoom(room_owner: userId, room_name: roomName, room_desc: roomDesc)
+    try await client
+        .from("room")
+        .insert(room)
+        .execute()
+    
+    // upload room picture kedalam bucket
+    let roomData: [RoomData] = try await client
+        .from("room")
+        .select()
+        .eq("room_owner", value: userId)
+        .execute()
+        .value
+    
+    let roomId = roomData[0].room_id
+    
+    guard let image = UIImage(named: roomPicture) else {
+        print("Error: Profile image not found")
+        return
+    }
+    
+    guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+        print("Error: Failed to convert image")
+        return
+    }
+    
+    try await client.storage
+        .from("zorion_bucket")
+        .upload("roomPicture/\(roomId)/\(roomPicture)",
+                data: imageData,
+                options: FileOptions(
+                    cacheControl: "3600",
+                    contentType: "image/jpeg",
+                    upsert: false
+                )
+        )
+    
+    // update data di tabel room
+    // nebeng untuk insert room member pas creator buat room
+    try await insertRoomMember(roomId: roomId)
+    
+    let publicUrl = try client.storage
+        .from("zorion_bucket")
+        .getPublicURL(path: "roomPicture/\(roomId)/\(roomPicture)")
+    
+    try await client
+        .from("room")
+        .update(["room_picture": publicUrl])
+        .eq("room_id", value: roomId)
+        .execute()
+}
