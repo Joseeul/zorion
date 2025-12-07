@@ -29,6 +29,7 @@ struct ChangeRoomPhotoView: View {
                 self.alertTitle = "Oops.. There Is An Error"
                 self.alertMessage = "\(error.localizedDescription)"
                 self.isShowingAlert = true
+                useCustomImage = false
                 return
             }
         } else {
