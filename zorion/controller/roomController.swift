@@ -381,3 +381,17 @@ func searchedRoom(roomName: String) async throws -> [RoomModel] {
     
     return result
 }
+
+// fetch semua member yang di search
+func searchedMember(roomId: UUID, username: String) async throws -> [UserModel] {
+    
+    let result: [AllRoomMember] = try await client
+        .from("room_members")
+        .select("*, user!inner(*)")
+        .eq("room_id", value: roomId)
+        .ilike("user.username", pattern: "%\(username)%")
+        .execute()
+        .value
+    
+    return result.map { $0.user }
+}

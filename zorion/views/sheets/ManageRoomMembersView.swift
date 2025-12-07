@@ -8,12 +8,13 @@
 import SwiftUI
 
 struct ManageRoomMembersView: View {
-    @State private var searchedMember: String = ""
+    @State private var inputedSearchedMember: String = ""
     @State private var roomMembers: [UserModel] = []
     @State private var isLoading: Bool = false
     @State private var isShowingAlert: Bool = false
     @State private var alertTitle: String = ""
     @State private var alertMessage: String = ""
+    @State private var isSearched: Bool = false
     
     func fetchRoomMember() async {
         isLoading = true
@@ -31,6 +32,23 @@ struct ManageRoomMembersView: View {
         }
         
         isLoading = false
+    }
+    
+    func handleSearchMember() async {
+        let roomId: UUID = UUID(uuidString: UserDefaults.standard.value(forKey: "userRoomId") as! String)!
+        
+        do {
+            roomMembers = try await searchedMember(roomId: roomId, username: inputedSearchedMember)
+            
+            isSearched = true
+            inputedSearchedMember = ""
+        } catch {
+            isLoading = false
+            self.alertTitle = "Oops.. There Is An Error"
+            self.alertMessage = "\(error.localizedDescription)"
+            self.isShowingAlert = true
+            return
+        }
     }
     
     func handleDeleteMember(userId: UUID) async {
@@ -58,7 +76,7 @@ struct ManageRoomMembersView: View {
             HStack {
                 TextField(
                     "Search...",
-                    text: $searchedMember
+                    text: $inputedSearchedMember
                 )
                 .padding(.vertical, 12)
                 .padding(.horizontal, 8)
@@ -70,17 +88,40 @@ struct ManageRoomMembersView: View {
                         )
                 )
                 
-                Button(action: {}, label: {
-                    Image(systemName: "magnifyingglass")
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 16, height: 16)
-                        .foregroundColor(.white)
-                        .fontWeight(.semibold)
-                })
-                .padding(14)
-                .background(.zorionPrimary)
-                .clipShape(Circle())
+                if isSearched == false || !inputedSearchedMember.isEmpty {
+                    Button(action: {
+                        Task {
+                            await handleSearchMember()
+                        }
+                    }, label: {
+                        Image(systemName: "magnifyingglass")
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 16, height: 16)
+                            .foregroundColor(.white)
+                            .fontWeight(.semibold)
+                    })
+                    .padding(14)
+                    .background(.zorionPrimary)
+                    .clipShape(Circle())
+                } else {
+                    Button(action: {
+                        Task {
+                            await fetchRoomMember()
+                            isSearched = false
+                        }
+                    }, label: {
+                        Image(systemName: "xmark")
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 16, height: 16)
+                            .foregroundColor(.white)
+                            .fontWeight(.semibold)
+                    })
+                    .padding(14)
+                    .background(.zorionPrimary)
+                    .clipShape(Circle())
+                }
             }
             .padding(.bottom, 12)
             
