@@ -279,15 +279,16 @@ func userPictureUpdateCustom(uiImage: UIImage) async throws {
 func roomPictureUpdateCustom(uiImage: UIImage) async throws {
     let roomId: UUID = UUID(uuidString: UserDefaults.standard.string(forKey: "userRoomId")!)!
     
-    let fileName = try await client.storage
+    let oldFiles = try await client.storage
         .from("zorion_bucket")
-        .list(
-            path: "roomPicture/\(roomId)/"
-        )
+        .list(path: "roomPicture/\(roomId)/")
     
-    try await client.storage
-        .from("zorion_bucket")
-        .remove(paths: ["roomPicture/\(roomId)/\(fileName[0].name)"])
+    if !oldFiles.isEmpty {
+        let pathsToRemove = oldFiles.map { "roomPicture/\(roomId)/\($0.name)" }
+        try await client.storage
+            .from("zorion_bucket")
+            .remove(paths: pathsToRemove)
+    }
     
     let maxDimension: CGFloat = 400
     
