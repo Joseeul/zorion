@@ -95,8 +95,8 @@ struct RoomsView: View {
                                     image
                                         .resizable()
                                         .aspectRatio(contentMode: .fill)
-                                        .clipShape(.circle)
                                         .frame(width: 42, height: 42)
+                                        .clipShape(Circle())
                                 } placeholder: {
                                     Color.gray.opacity(0.3)
                                         .frame(width: 42, height: 42)

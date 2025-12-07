@@ -18,8 +18,8 @@ struct RoomHeader: View {
                 image
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-                    .clipShape(.circle)
                     .frame(width: 42, height: 42)
+                    .clipShape(Circle())
             } placeholder: {
                 Color.gray.opacity(0.3)
                     .frame(width: 42, height: 42)
@@ -33,11 +33,16 @@ struct RoomHeader: View {
             VStack(alignment: .leading) {
                 Text(roomName ?? "")
                     .fontWeight(.semibold)
+                    .lineLimit(1)
                 
                 Text(roomDesc ?? "")
                     .font(.footnote)
                     .foregroundStyle(.zorionGray)
+                    .lineLimit(1)
             }
+            
+            Spacer()
         }
+        .contentShape(Rectangle())
     }
 }
