@@ -172,20 +172,31 @@ struct AudioRoomView: View {
             }
         }
         .task {
-            Task {
-                guard !callCreated else { return }
+            guard !callCreated else { return }
+            
+            do {
+                try await call.join()
+                callCreated = true
+                print("✅ Berhasil join ke existing room")
                 
-                do {
-                    try await call.join()
-                    callCreated = true
-                } catch {
-                    if "\(error)".contains("call does not exist") {
+            } catch let error as APIError {
+                print("⚠️ Gagal join, API Error: \(error.message) (Code: \(error.statusCode))")
+                
+                if error.statusCode == 404 {
+                    do {
+                        print("🔄 Mencoba membuat room baru...")
                         try await call.join(create: true)
                         callCreated = true
-                    } else {
-                        print("Join failed with unexpected error: \(error)")
+                        print("✅ Berhasil membuat dan join room baru")
+                    } catch {
+                        print("❌ Gagal membuat room: \(error)")
                     }
+                } else {
+                    print("❌ Error lain (bukan 404): \(error)")
                 }
+                
+            } catch {
+                print("❌ Unexpected error: \(error)")
             }
         }
     }
