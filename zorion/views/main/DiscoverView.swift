@@ -127,6 +127,7 @@ struct DiscoverView: View {
                                 .buttonStyle(.plain)
                             }
                         }
+                        .padding(.bottom, 70)
                     }
                     .padding()
                     .alert(alertTitle, isPresented: $isShowingAlert, presenting: alertMessage) {
