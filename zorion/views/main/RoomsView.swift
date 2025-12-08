@@ -94,9 +94,9 @@ struct RoomsView: View {
                                 AsyncImage(url: user?.profile_picture) { image in
                                     image
                                         .resizable()
-                                        .scaledToFit()
-                                        .clipShape(.circle)
-                                        .frame(width: 42)
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 42, height: 42)
+                                        .clipShape(Circle())
                                 } placeholder: {
                                     Color.gray.opacity(0.3)
                                         .frame(width: 42, height: 42)

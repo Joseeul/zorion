@@ -6,24 +6,43 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct ChangeRoomPhotoView: View {
     @State private var selectedRoomPicture: String = ""
     @State private var isShowingAlert: Bool = false
     @State private var alertTitle: String = ""
     @State private var alertMessage: String = ""
+    @State private var selectedItem: PhotosPickerItem? = nil
+    @State private var selectedImage: UIImage? = nil
+    @State private var useCustomImage: Bool = false
     @Environment(\.dismiss) var dismiss
     
     func handleRoomPhotoUpdate() async {
-        do {
-            try await roomPictureUpdate(newPicture: selectedRoomPicture)
-            
-            dismiss()
-        } catch {
-            self.alertTitle = "Oops.. There Is An Error"
-            self.alertMessage = "\(error.localizedDescription)"
-            self.isShowingAlert = true
-            return
+        if useCustomImage {
+            do {
+                try await roomPictureUpdateCustom(uiImage: selectedImage!)
+                
+                useCustomImage = false
+                dismiss()
+            } catch {
+                self.alertTitle = "Oops.. There Is An Error"
+                self.alertMessage = "\(error.localizedDescription)"
+                self.isShowingAlert = true
+                useCustomImage = false
+                return
+            }
+        } else {
+            do {
+                try await roomPictureUpdate(newPicture: selectedRoomPicture)
+                
+                dismiss()
+            } catch {
+                self.alertTitle = "Oops.. There Is An Error"
+                self.alertMessage = "\(error.localizedDescription)"
+                self.isShowingAlert = true
+                return
+            }
         }
     }
     
@@ -37,19 +56,43 @@ struct ChangeRoomPhotoView: View {
                     .padding(.bottom, 8)
                 
                 HStack(spacing: 24) {
-                    Button(action: {}, label: {
-                        Image(systemName: "plus")
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 32, height: 32)
-                            .clipShape(.circle)
-                            .foregroundColor(.zorionGray)
-                    })
-                    .padding(14)
-                    .overlay(
-                        Circle()
-                            .stroke(.zorionGray, lineWidth: 0.5)
-                    )
+                    PhotosPicker(selection: $selectedItem, matching: .images) {
+                        if let image = selectedImage {
+                            Image(uiImage: image)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 70, height: 70)
+                                .clipShape(Circle())
+                                .overlay(
+                                    Circle()
+                                        .stroke(Color.zorionGray, lineWidth: 0.5)
+                                )
+                        } else {
+                            Image(systemName: "plus")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 24, height: 24)
+                                .padding(23)
+                                .foregroundColor(.zorionGray)
+                                .overlay(
+                                    Circle()
+                                        .stroke(Color.zorionGray, lineWidth: 0.5)
+                                )
+                        }
+                    }
+                    .onChange(of: selectedItem) { oldValue, newItem in
+                        Task {
+                            if let data = try? await newItem?.loadTransferable(type: Data.self),
+                               let uiImage = UIImage(data: data) {
+                                
+                                await MainActor.run {
+                                    self.selectedImage = uiImage
+                                    self.selectedRoomPicture = "custom_uploaded_image"
+                                    useCustomImage = true
+                                }
+                            }
+                        }
+                    }
                     
                     Button(action: {
                         selectedRoomPicture = "chat_orange"

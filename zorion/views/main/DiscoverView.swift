@@ -54,7 +54,7 @@ struct DiscoverView: View {
     
     var body: some View {
         NavigationStack {
-            ScrollView {
+            VStack {
                 if isLoading {
                     ProgressView("Loading popular rooms data...")
                 } else {
@@ -115,15 +115,19 @@ struct DiscoverView: View {
                             .fontWeight(.bold)
                             .padding(.top, 12)
                         
-                        ForEach(0..<rooms.count, id: \.self) { index in
-                            NavigationLink(destination: DetailRoom(roomId: rooms[index].room_id)) {
-                                RoomHeader(
-                                    imageUrl: URL(string: rooms[index].room_picture),
-                                    roomName: rooms[index].room_name,
-                                    roomDesc: rooms[index].room_desc
-                                )
+                        ScrollView {
+                            ForEach(0..<rooms.count, id: \.self) { index in
+                                NavigationLink(destination: DetailRoom(roomId: rooms[index].room_id)) {
+                                    RoomHeader(
+                                        imageUrl: URL(string: rooms[index].room_picture),
+                                        roomName: rooms[index].room_name,
+                                        roomDesc: rooms[index].room_desc
+                                    )
+                                }
+                                .buttonStyle(.plain)
                             }
-                            .buttonStyle(.plain)}
+                        }
+                        .padding(.bottom, 70)
                     }
                     .padding()
                     .alert(alertTitle, isPresented: $isShowingAlert, presenting: alertMessage) {

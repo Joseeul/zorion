@@ -57,9 +57,9 @@ struct ProfileView: View {
                 AsyncImage(url: user?.profile_picture) { image in
                     image
                         .resizable()
-                        .scaledToFit()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 70, height: 70)
                         .clipShape(.circle)
-                        .frame(width: 70)
                 } placeholder: {
                     Color.gray.opacity(0.3)
                         .frame(width: 70, height: 70)

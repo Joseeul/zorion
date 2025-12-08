@@ -8,6 +8,7 @@
 import Foundation
 import Supabase
 import UIKit
+import PhotosUI
 
 private let client = SupabaseManager.shared.client
 
@@ -207,6 +208,132 @@ func addNewCreator(roomName: String, roomDesc: String, roomPicture: String) asyn
     try await client
         .from("room")
         .update(["room_picture": publicUrl])
+        .eq("room_id", value: roomId)
+        .execute()
+}
+
+// update pakai custom profile picture
+func userPictureUpdateCustom(uiImage: UIImage) async throws {
+    let userId: UUID = try await client.auth.user().id
+    
+    let oldFiles = try await client.storage
+        .from("zorion_bucket")
+        .list(path: "userPicture/\(userId)/")
+    
+    if !oldFiles.isEmpty {
+        let pathsToRemove = oldFiles.map { "userPicture/\(userId)/\($0.name)" }
+        try await client.storage
+            .from("zorion_bucket")
+            .remove(paths: pathsToRemove)
+    }
+
+    let maxDimension: CGFloat = 400
+    
+    var newSize = uiImage.size
+    if uiImage.size.width > maxDimension || uiImage.size.height > maxDimension {
+        let aspectRatio = uiImage.size.width / uiImage.size.height
+        if uiImage.size.width > uiImage.size.height {
+            newSize = CGSize(width: maxDimension, height: maxDimension / aspectRatio)
+        } else {
+            newSize = CGSize(width: maxDimension * aspectRatio, height: maxDimension)
+        }
+    }
+    
+    let renderer = UIGraphicsImageRenderer(size: newSize)
+    let resizedImage = renderer.image { _ in
+        uiImage.draw(in: CGRect(origin: .zero, size: newSize))
+    }
+
+    guard let imageData = resizedImage.jpegData(compressionQuality: 0.5) else {
+        print("Error: Failed to convert custom image")
+        return
+    }
+
+    let newFileName = "\(UUID().uuidString).jpg"
+    
+    try await client.storage
+        .from("zorion_bucket")
+        .upload("userPicture/\(userId)/\(newFileName)",
+                data: imageData,
+                options: FileOptions(
+                    cacheControl: "3600",
+                    contentType: "image/jpeg",
+                    upsert: false
+                )
+        )
+
+    let publicUrl = try client.storage
+        .from("zorion_bucket")
+        .getPublicURL(path: "userPicture/\(userId)/\(newFileName)")
+    
+    try await client
+        .from("user")
+        .update(["profile_picture" : publicUrl])
+        .eq("user_id", value: userId)
+        .execute()
+        
+    print("✅ Upload Success: \(publicUrl)")
+}
+
+// update pakai custom room picture
+func roomPictureUpdateCustom(uiImage: UIImage) async throws {
+    let roomId: UUID = UUID(uuidString: UserDefaults.standard.string(forKey: "userRoomId")!)!
+    
+    let oldFiles = try await client.storage
+        .from("zorion_bucket")
+        .list(path: "roomPicture/\(roomId)/")
+    
+    if !oldFiles.isEmpty {
+        let pathsToRemove = oldFiles.map { "roomPicture/\(roomId)/\($0.name)" }
+        try await client.storage
+            .from("zorion_bucket")
+            .remove(paths: pathsToRemove)
+    }
+    
+    let maxDimension: CGFloat = 400
+    
+    var newSize = uiImage.size
+    if uiImage.size.width > maxDimension || uiImage.size.height > maxDimension {
+        let aspectRatio = uiImage.size.width / uiImage.size.height
+        if uiImage.size.width > uiImage.size.height {
+            newSize = CGSize(width: maxDimension, height: maxDimension / aspectRatio)
+        } else {
+            newSize = CGSize(width: maxDimension * aspectRatio, height: maxDimension)
+        }
+    }
+    
+    let renderer = UIGraphicsImageRenderer(size: newSize)
+    let resizedImage = renderer.image { _ in
+        uiImage.draw(in: CGRect(origin: .zero, size: newSize))
+    }
+
+    guard let imageData = resizedImage.jpegData(compressionQuality: 0.5) else {
+        print("Error: Failed to convert custom image")
+        return
+    }
+
+    let newFileName = "\(UUID().uuidString).jpg"
+    
+    try await client.storage
+        .from("zorion_bucket")
+        .upload("roomPicture/\(roomId)/\(newFileName)",
+                data: imageData,
+                options: FileOptions(
+                    cacheControl: "3600",
+                    contentType: "image/jpeg",
+                    upsert: false
+                )
+        )
+    
+    // ambil link gambarnya
+    let publicUrl = try client.storage
+        .from("zorion_bucket")
+        .getPublicURL(path: "roomPicture/\(roomId)/\(newFileName)")
+    
+    // update di table link nya
+    try await client
+        .from("room")
+        .update(["room_picture" : publicUrl])
         .eq("room_id", value: roomId)
         .execute()
 }
